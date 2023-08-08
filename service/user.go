@@ -28,7 +28,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 	//检查用户名是否已存在
 	token := user.Username + user.Password
 	if _, exist := controller.UsersLoginInfo[token]; exist {
-		reply = &controller.UserLoginResponse{
+		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
 		}
 	} else {
@@ -38,7 +38,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 			Name: user.Username,
 		}
 		controller.UsersLoginInfo[token] = newUser
-		reply = &controller.UserLoginResponse{
+		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   controller.UserIdSequence,
 			Token:    token,
@@ -53,13 +53,13 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 	token := user.Username + user.Password
 	//
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
-		reply = &controller.UserLoginResponse{
+		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   userInfo.Id,
 			Token:    token,
 		}
 	} else {
-		reply = &controller.UserLoginResponse{
+		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
 	}
