@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -79,6 +80,7 @@ func UserInfo(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 	//
+	fmt.Println(username)
 	client, err := rpc.Dial("tcp", "127.0.0.1:9091")
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
