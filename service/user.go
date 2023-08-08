@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
 
-	"github.com/gin-gonic/gin"
 	"log"
 	"net"
 
@@ -16,7 +15,7 @@ import (
 // 用户服务接口
 type UserService interface {
 	Register(user controller.UserPassword, reply *controller.UserLoginResponse) error
-	Login(c *gin.Context, reply *string) error
+	Login(user controller.UserPassword, reply *controller.UserLoginResponse) error
 }
 
 // 用户服务实现
