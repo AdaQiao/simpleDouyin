@@ -3,18 +3,18 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/RaymondCode/simple-demo/controller"
+	_"github.com/RaymondCode/simple-demo/controller"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net"
-	"net/http"
+	_"net/http"
 	"net/rpc"
-	"sync/atomic"
+	_"sync/atomic"
 )
 
 // 用户服务接口
 type UserService interface {
-	Register(c *gin.Context, reply *string) error
+	Register(c string, reply *string) error
 	Login(c *gin.Context, reply *string) error
 }
 
@@ -23,31 +23,31 @@ type UserServiceImpl struct {
 }
 
 // 用户注册
-func (s *UserServiceImpl) Register(c *gin.Context, reply *string) error {
+func (s *UserServiceImpl) Register(c string, reply *string) error {
 	// 检查用户名是否已存在
+fmt.Println("addfafasfasdfasdff")
+	// username := c.Query("username")
+	// password := c.Query("password")
 
-	username := c.Query("username")
-	password := c.Query("password")
-
-	token := username + password
-	if _, exist := controller.UsersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
-		})
-	} else {
-		atomic.AddInt64(&controller.UserIdSequence, 1)
-		newUser := controller.User{
-			Id:   controller.UserIdSequence,
-			Name: username,
-		}
-		controller.UsersLoginInfo[token] = newUser
-		c.JSON(http.StatusOK, controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 0},
-			UserId:   controller.UserIdSequence,
-			Token:    username + password,
-		})
-	}
-
+	// token := username + password
+	// if _, exist := controller.UsersLoginInfo[token]; exist {
+	// 	c.JSON(http.StatusOK, controller.UserLoginResponse{
+	// 		Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
+	// 	})
+	// } else {
+	// 	atomic.AddInt64(&controller.UserIdSequence, 1)
+	// 	newUser := controller.User{
+	// 		Id:   controller.UserIdSequence,
+	// 		Name: username,
+	// 	}
+	// 	controller.UsersLoginInfo[token] = newUser
+	// 	c.JSON(http.StatusOK, controller.UserLoginResponse{
+	// 		Response: controller.Response{StatusCode: 0},
+	// 		UserId:   controller.UserIdSequence,
+	// 		Token:    username + password,
+	// 	})
+	// }
+ //  *reply = "注册成功"
 	return nil
 }
 
