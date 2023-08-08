@@ -82,7 +82,8 @@ func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controll
 	token := user.Username + user.Password
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserResponse{
-			Response: controller.Response{StatusCode: 0, User: userInfo},
+			Response: controller.Response{StatusCode: 0},
+			User:     userInfo,
 		}
 	} else {
 		*reply = controller.UserResponse{
