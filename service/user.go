@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
 
@@ -49,16 +48,22 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 }
 
 // 用户登录
-func (s *UserServiceImpl) Login(c *gin.Context, reply *string) error {
-	// 查找用户
-	//for _, u := range s.users {
-	//	if u.Username == user.Username && u.Password == user.Password {
-	//		*reply = "登录成功"
-	//		return nil
-	//	}
-	//}
+func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
+
+	token := user.Username + user.Password
 	//
-	return errors.New("用户名或密码错误")
+	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
+		reply = &controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 0},
+			UserId:   userInfo.Id,
+			Token:    token,
+		}
+	} else {
+		reply = &controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		}
+	}
+	return nil
 }
 
 func RunUserServer() {
