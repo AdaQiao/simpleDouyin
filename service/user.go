@@ -4,12 +4,23 @@ import (
 	"errors"
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net"
+	"net/http"
 	"net/rpc"
+	"sync/atomic"
 )
 
-// 用户结构体
+var usersLoginInfo = map[string]controller.User{
+	"zhangleidouyin": {
+		Id:            1,
+		Name:          "zhanglei",
+		FollowCount:   10,
+		FollowerCount: 5,
+		IsFollow:      true,
+	},
+}
 
 // 用户服务接口
 type UserService interface {
@@ -23,17 +34,33 @@ type UserServiceImpl struct {
 }
 
 // 用户注册
-func (s *UserServiceImpl) Register(user controller.UserPassword, reply *string) error {
+func (s *UserServiceImpl) Register(user controller.UserPassword, c *gin.Context) error {
 	// 检查用户名是否已存在
-	for _, u := range s.users {
-		if u.Username == user.Username {
-			return errors.New("用户名已存在")
-		}
-	}
 
+	username := c.Query("username")
+	password := c.Query("password")
+
+	token := username + password
+	if _, exist := usersLoginInfo[token]; exist {
+		c.JSON(http.StatusOK, controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
+		})
+	} else {
+		atomic.AddInt64(&controller.UserIdSequence, 1)
+		newUser := controller.User{
+			Id:   controller.UserIdSequence,
+			Name: username,
+		}
+		usersLoginInfo[token] = newUser
+		c.JSON(http.StatusOK, controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 0},
+			UserId:   controller.UserIdSequence,
+			Token:    username + password,
+		})
+	}
 	// 注册用户
 	s.users = append(s.users, user)
-	*reply = "注册成功"
+
 	return nil
 }
 
@@ -50,7 +77,7 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *string) err
 	return errors.New("用户名或密码错误")
 }
 
-func main() {
+func RunUserServer() {
 	// 创建用户服务实例
 	userService := &UserServiceImpl{}
 
@@ -58,7 +85,7 @@ func main() {
 	rpc.Register(userService)
 
 	// 启动RPC服务器
-	listener, err := net.Listen("tcp", "127.0.0.1:9090")
+	listener, err := net.Listen("tcp", "127.0.0.1:9091")
 	if err != nil {
 		log.Fatal("RPC服务器启动失败:", err)
 	}
