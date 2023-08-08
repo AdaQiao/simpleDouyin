@@ -1,8 +1,12 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"net/rpc"
 	"sync/atomic"
 )
 
@@ -37,6 +41,19 @@ func Register(c *gin.Context) {
 	password := c.Query("password")
 
 	token := username + password
+	// 连接到远程RPC服务器
+	client, err := rpc.Dial("tcp", "127.0.0.1:9090")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
+	}
+
+	// 调用远程注册方法
+	var registerReply string
+	err = client.Call("UserServiceImpl.Register", service.User{Username: username, Password: password}, &registerReply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
+	fmt.Println(registerReply)
 
 	if _, exist := usersLoginInfo[token]; exist {
 		c.JSON(http.StatusOK, UserLoginResponse{
