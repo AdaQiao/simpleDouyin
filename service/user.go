@@ -16,6 +16,7 @@ import (
 type UserService interface {
 	Register(user controller.UserPassword, reply *controller.UserLoginResponse) error
 	Login(user controller.UserPassword, reply *controller.UserLoginResponse) error
+	UserInfo(user controller.UserPassword, reply *controller.UserResponse)
 }
 
 // 用户服务实现
@@ -59,6 +60,32 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 		}
 	} else {
 		*reply = controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		}
+	}
+	return nil
+}
+
+// 用户信息
+func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controller.UserResponse) error {
+	//if user, exist := UsersLoginInfo[token]; exist {
+	//	c.JSON(http.StatusOK, UserResponse{
+	//		Response: Response{StatusCode: 0},
+	//		User:     user,
+	//	})
+	//} else {
+	//	c.JSON(http.StatusOK, UserResponse{
+	//		Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+	//	})
+	//}
+	//检查用户名是否已存在
+	token := user.Username + user.Password
+	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
+		*reply = controller.UserResponse{
+			Response: controller.Response{StatusCode: 0, User: userInfo},
+		}
+	} else {
+		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
 	}
