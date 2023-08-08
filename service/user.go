@@ -35,7 +35,6 @@ func (s *UserServiceImpl) Register(c *gin.Context, reply *string) error {
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
 		})
 	} else {
-    fmt.Println("afdasfasfadfa")
 		atomic.AddInt64(&controller.UserIdSequence, 1)
 		newUser := controller.User{
 			Id:   controller.UserIdSequence,
