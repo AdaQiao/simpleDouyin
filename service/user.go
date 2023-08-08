@@ -12,16 +12,6 @@ import (
 	"sync/atomic"
 )
 
-var usersLoginInfo = map[string]controller.User{
-	"zhangleidouyin": {
-		Id:            1,
-		Name:          "zhanglei",
-		FollowCount:   10,
-		FollowerCount: 5,
-		IsFollow:      true,
-	},
-}
-
 // 用户服务接口
 type UserService interface {
 	Register(user controller.UserPassword, reply *string) error
@@ -41,7 +31,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, c *gin.Context)
 	password := c.Query("password")
 
 	token := username + password
-	if _, exist := usersLoginInfo[token]; exist {
+	if _, exist := controller.UsersLoginInfo[token]; exist {
 		c.JSON(http.StatusOK, controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
 		})
@@ -51,7 +41,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, c *gin.Context)
 			Id:   controller.UserIdSequence,
 			Name: username,
 		}
-		usersLoginInfo[token] = newUser
+		controller.UsersLoginInfo[token] = newUser
 		c.JSON(http.StatusOK, controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   controller.UserIdSequence,

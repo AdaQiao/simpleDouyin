@@ -6,7 +6,17 @@ import (
 	"net/rpc"
 )
 
-// usersLoginInfo use map to store user info, and key is username+password for demo
+var UsersLoginInfo = map[string]User{
+	"zhangleidouyin": {
+		Id:            1,
+		Name:          "zhanglei",
+		FollowCount:   10,
+		FollowerCount: 5,
+		IsFollow:      true,
+	},
+}
+
+// UsersLoginInfo use map to store user info, and key is username+password for demo
 // user data will be cleared every time the server starts
 // test data: username=zhanglei, password=douyin
 
@@ -49,7 +59,7 @@ func Login(c *gin.Context) {
 	//password := c.Query("password")
 	//token := username + password
 	//
-	//if user, exist := usersLoginInfo[token]; exist {
+	//if user, exist := UsersLoginInfo[token]; exist {
 	//	c.JSON(http.StatusOK, UserLoginResponse{
 	//		Response: Response{StatusCode: 0},
 	//		UserId:   user.Id,
