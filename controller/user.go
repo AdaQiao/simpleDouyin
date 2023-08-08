@@ -47,11 +47,12 @@ func Register(c *gin.Context) {
 	}
 
 	// 调用远程注册方法
-	err = client.Call("UserServiceImpl.Register", UserPassword{Username: "john", Password: "password"}, c)
+	var reply string
+	err = client.Call("UserServiceImpl.Register", c, reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
-
+	log.Println(reply)
 }
 
 func Login(c *gin.Context) {
