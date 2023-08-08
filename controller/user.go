@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"net/rpc"
 )
 
@@ -39,7 +40,8 @@ type UserPassword struct {
 }
 
 func Register(c *gin.Context) {
-
+	username := c.Query("username")
+	password := c.Query("password")
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9091")
 	if err != nil {
@@ -47,13 +49,13 @@ func Register(c *gin.Context) {
 	}
 
 	// 调用远程注册方法
-	var reply string = ""
-  var p string = ""
-	err = client.Call("UserServiceImpl.Register", p, &reply)
+	var reply UserLoginResponse
+	err = client.Call("UserServiceImpl.Register", UserPassword{Username: username, Password: password}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
-	log.Println(reply)
+	c.JSON(http.StatusOK, reply)
+
 }
 
 func Login(c *gin.Context) {

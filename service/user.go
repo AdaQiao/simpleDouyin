@@ -3,18 +3,20 @@ package service
 import (
 	"errors"
 	"fmt"
-	_"github.com/RaymondCode/simple-demo/controller"
+	"github.com/RaymondCode/simple-demo/controller"
+
 	"github.com/gin-gonic/gin"
 	"log"
 	"net"
-	_"net/http"
+
 	"net/rpc"
-	_"sync/atomic"
+
+	"sync/atomic"
 )
 
 // 用户服务接口
 type UserService interface {
-	Register(c string, reply *string) error
+	Register(user controller.UserPassword, reply *controller.UserLoginResponse) error
 	Login(c *gin.Context, reply *string) error
 }
 
@@ -23,31 +25,26 @@ type UserServiceImpl struct {
 }
 
 // 用户注册
-func (s *UserServiceImpl) Register(c string, reply *string) error {
-	// 检查用户名是否已存在
-fmt.Println("addfafasfasdfasdff")
-	// username := c.Query("username")
-	// password := c.Query("password")
-
-	// token := username + password
-	// if _, exist := controller.UsersLoginInfo[token]; exist {
-	// 	c.JSON(http.StatusOK, controller.UserLoginResponse{
-	// 		Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
-	// 	})
-	// } else {
-	// 	atomic.AddInt64(&controller.UserIdSequence, 1)
-	// 	newUser := controller.User{
-	// 		Id:   controller.UserIdSequence,
-	// 		Name: username,
-	// 	}
-	// 	controller.UsersLoginInfo[token] = newUser
-	// 	c.JSON(http.StatusOK, controller.UserLoginResponse{
-	// 		Response: controller.Response{StatusCode: 0},
-	// 		UserId:   controller.UserIdSequence,
-	// 		Token:    username + password,
-	// 	})
-	// }
- //  *reply = "注册成功"
+func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controller.UserLoginResponse) error {
+	//检查用户名是否已存在
+	token := user.Username + user.Password
+	if _, exist := controller.UsersLoginInfo[token]; exist {
+		reply = &controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
+		}
+	} else {
+		atomic.AddInt64(&controller.UserIdSequence, 1)
+		newUser := controller.User{
+			Id:   controller.UserIdSequence,
+			Name: user.Username,
+		}
+		controller.UsersLoginInfo[token] = newUser
+		reply = &controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 0},
+			UserId:   controller.UserIdSequence,
+			Token:    token,
+		}
+	}
 	return nil
 }
 
