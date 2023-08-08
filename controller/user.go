@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -77,17 +76,15 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
+	token := c.Query("token")
 	//
-	fmt.Println(username)
 	client, err := rpc.Dial("tcp", "127.0.0.1:9091")
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
 	}
 	//
 	var reply UserResponse
-	err = client.Call("UserServiceImpl.UserInfo", UserPassword{Username: username, Password: password}, &reply)
+	err = client.Call("UserServiceImpl.UserInfo", token, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}

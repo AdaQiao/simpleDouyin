@@ -15,7 +15,7 @@ import (
 type UserService interface {
 	Register(user controller.UserPassword, reply *controller.UserLoginResponse) error
 	Login(user controller.UserPassword, reply *controller.UserLoginResponse) error
-	UserInfo(user controller.UserPassword, reply *controller.UserResponse)
+	UserInfo(token string, reply *controller.UserResponse)
 }
 
 // 用户服务实现
@@ -64,9 +64,7 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 }
 
 // 用户信息
-func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controller.UserResponse) error {
-	token := user.Username + user.Password
-	fmt.Println(token)
+func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse) error {
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 0},
