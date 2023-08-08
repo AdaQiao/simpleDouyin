@@ -50,13 +50,13 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
 	token := user.Username + user.Password
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
+		fmt.Println("777tjtdyjdty")
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   userInfo.Id,
 			Token:    token,
 		}
 	} else {
-		fmt.Println("777tjtdyjdty")
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
