@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
-
 	"log"
 	"net"
 
@@ -49,9 +48,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 
 // 用户登录
 func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
-
 	token := user.Username + user.Password
-	//
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
@@ -68,17 +65,7 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 
 // 用户信息
 func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controller.UserResponse) error {
-	//if user, exist := UsersLoginInfo[token]; exist {
-	//	c.JSON(http.StatusOK, UserResponse{
-	//		Response: Response{StatusCode: 0},
-	//		User:     user,
-	//	})
-	//} else {
-	//	c.JSON(http.StatusOK, UserResponse{
-	//		Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-	//	})
-	//}
-	//检查用户名是否已存在
+	fmt.Println("111111445848dddd")
 	token := user.Username + user.Password
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserResponse{
@@ -86,6 +73,7 @@ func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controll
 			User:     userInfo,
 		}
 	} else {
+		fmt.Println("dwgtshsrthtyhydtjtdyjdty")
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
