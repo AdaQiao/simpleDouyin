@@ -60,7 +60,6 @@ func Register(c *gin.Context) {
 func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
-
 	token := username + password
 
 	if user, exist := usersLoginInfo[token]; exist {
