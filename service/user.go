@@ -14,17 +14,16 @@ import (
 
 // 用户服务接口
 type UserService interface {
-	Register(user controller.UserPassword, reply *string) error
-	Login(user controller.UserPassword, reply *string) error
+	Register(c *gin.Context, reply *string) error
+	Login(c *gin.Context, reply *string) error
 }
 
 // 用户服务实现
 type UserServiceImpl struct {
-	users []controller.UserPassword
 }
 
 // 用户注册
-func (s *UserServiceImpl) Register(user controller.UserPassword, c *gin.Context) error {
+func (s *UserServiceImpl) Register(c *gin.Context, reply *string) error {
 	// 检查用户名是否已存在
 
 	username := c.Query("username")
@@ -48,22 +47,20 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, c *gin.Context)
 			Token:    username + password,
 		})
 	}
-	// 注册用户
-	s.users = append(s.users, user)
 
 	return nil
 }
 
 // 用户登录
-func (s *UserServiceImpl) Login(user controller.UserPassword, reply *string) error {
+func (s *UserServiceImpl) Login(c *gin.Context, reply *string) error {
 	// 查找用户
-	for _, u := range s.users {
-		if u.Username == user.Username && u.Password == user.Password {
-			*reply = "登录成功"
-			return nil
-		}
-	}
-
+	//for _, u := range s.users {
+	//	if u.Username == user.Username && u.Password == user.Password {
+	//		*reply = "登录成功"
+	//		return nil
+	//	}
+	//}
+	//
 	return errors.New("用户名或密码错误")
 }
 
