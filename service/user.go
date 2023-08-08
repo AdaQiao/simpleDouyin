@@ -52,15 +52,14 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 
 	token := user.Username + user.Password
 	//
-	fmt.Println(token)
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
-		*reply = controller.UserLoginResponse{
+		reply = &controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   userInfo.Id,
 			Token:    token,
 		}
 	} else {
-		*reply = controller.UserLoginResponse{
+		reply = &controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
 	}
