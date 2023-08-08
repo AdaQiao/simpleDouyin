@@ -41,7 +41,7 @@ type UserPassword struct {
 func Register(c *gin.Context) {
 
 	// 连接到远程RPC服务器
-	client, err := rpc.Dial("tcp", "127.0.0.1:9090")
+	client, err := rpc.Dial("tcp", "127.0.0.1:9091")
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
 	}
