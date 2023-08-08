@@ -3,30 +3,27 @@ package service
 import (
 	"errors"
 	"fmt"
+	"github.com/RaymondCode/simple-demo/controller"
 	"log"
 	"net"
 	"net/rpc"
 )
 
 // 用户结构体
-type User struct {
-	Username string
-	Password string
-}
 
 // 用户服务接口
 type UserService interface {
-	Register(user User, reply *string) error
-	Login(user User, reply *string) error
+	Register(user controller.UserPassword, reply *string) error
+	Login(user controller.UserPassword, reply *string) error
 }
 
 // 用户服务实现
 type UserServiceImpl struct {
-	users []User
+	users []controller.UserPassword
 }
 
 // 用户注册
-func (s *UserServiceImpl) Register(user User, reply *string) error {
+func (s *UserServiceImpl) Register(user controller.UserPassword, reply *string) error {
 	// 检查用户名是否已存在
 	for _, u := range s.users {
 		if u.Username == user.Username {
@@ -41,7 +38,7 @@ func (s *UserServiceImpl) Register(user User, reply *string) error {
 }
 
 // 用户登录
-func (s *UserServiceImpl) Login(user User, reply *string) error {
+func (s *UserServiceImpl) Login(user controller.UserPassword, reply *string) error {
 	// 查找用户
 	for _, u := range s.users {
 		if u.Username == user.Username && u.Password == user.Password {

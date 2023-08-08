@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -36,6 +35,11 @@ type UserResponse struct {
 	User User `json:"user"`
 }
 
+type UserPassword struct {
+	Username string
+	Password string
+}
+
 func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
@@ -49,7 +53,7 @@ func Register(c *gin.Context) {
 
 	// 调用远程注册方法
 	var registerReply string
-	err = client.Call("UserServiceImpl.Register", service.User{Username: username, Password: password}, &registerReply)
+	err = client.Call("UserServiceImpl.Register", UserPassword{Username: "john", Password: "password"}, &registerReply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
