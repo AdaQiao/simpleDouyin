@@ -50,7 +50,6 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
 	token := user.Username + user.Password
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
-		fmt.Println("777tjtdyjdty")
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   userInfo.Id,
@@ -67,13 +66,14 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 // 用户信息
 func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controller.UserResponse) error {
 	token := user.Username + user.Password
+	fmt.Println(token)
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 0},
 			User:     userInfo,
 		}
 	} else {
-		fmt.Println("dwgtshsrthtyhydtjtdyjdty")
+		fmt.Println("here")
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
