@@ -56,6 +56,7 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 			Token:    token,
 		}
 	} else {
+		fmt.Println("777tjtdyjdty")
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
@@ -65,7 +66,6 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 
 // 用户信息
 func (s *UserServiceImpl) UserInfo(user controller.UserPassword, reply *controller.UserResponse) error {
-	fmt.Println("111111445848dddd")
 	token := user.Username + user.Password
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserResponse{
