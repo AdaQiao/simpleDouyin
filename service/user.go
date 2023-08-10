@@ -9,6 +9,8 @@ import (
 	"net/rpc"
 
 	"sync/atomic"
+
+	"github.com/cpl/simple-demo/db"
 )
 
 // 用户服务接口
@@ -20,17 +22,30 @@ type UserService interface {
 
 // 用户服务实现
 type UserServiceImpl struct {
+	repo db.UserRepository
 }
 
 // 用户注册
 func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controller.UserLoginResponse) error {
 	//检查用户名是否已存在
 	token := user.Username + user.Password
-	if _, exist := controller.UsersLoginInfo[token]; exist {
+	/*if _, exist := controller.UsersLoginInfo[token]; exist {
+	*reply = controller.UserLoginResponse{
+		Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
+	}*/
+	_, err := s.repo.GetUser(token)
+	if err == nil {
 		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
 		}
 	} else {
+
+		// 调用存储库的 CreateUser 函数执行插入操作
+		if err := s.repo.CreateUser(user); err != nil {
+			log.Println("插入用户数据失败:", err)
+			return err
+		}
+
 		atomic.AddInt64(&controller.UserIdSequence, 1)
 		newUser := controller.User{
 			Id:   controller.UserIdSequence,
@@ -42,14 +57,30 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 			UserId:   controller.UserIdSequence,
 			Token:    token,
 		}
+
 	}
 	return nil
 }
 
 // 用户登录
 func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
-	token := user.Username + user.Password
+	/*token := user.Username + user.Password
 	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
+		*reply = controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 0},
+			UserId:   userInfo.Id,
+			Token:    token,
+		}
+	} else {
+		*reply = controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		}
+	}
+	return nil*/
+
+	token := user.Username + user.Password
+	userInfo, err := s.repo.GetUser(token)
+	if err == nil {
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
 			UserId:   userInfo.Id,
@@ -71,7 +102,6 @@ func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse)
 			User:     userInfo,
 		}
 	} else {
-		fmt.Println("here")
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
