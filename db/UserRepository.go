@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"github.com/cpl/simple-demo/controller"
 	"log"
 )
@@ -43,10 +42,10 @@ func (repo *MySQLUserRepository) GetUser(token string) (*controller.User, error)
 	user := &controller.User{}
 	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		/*if err == sql.ErrNoRows {
 			// 用户不存在
 			return nil, nil
-		}
+		}*/
 		log.Println("查询用户失败:", err)
 		return nil, err
 	}
