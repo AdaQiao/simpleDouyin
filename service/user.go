@@ -96,10 +96,23 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 
 // 用户信息
 func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse) error {
-	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
+	/*if userInfo, exist := controller.UsersLoginInfo[token]; exist {
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 0},
 			User:     userInfo,
+		}
+	} else {
+		*reply = controller.UserResponse{
+			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		}
+	}
+	return nil*/
+
+	userInfo, err := s.repo.GetUser(token)
+	if err == nil {
+		*reply = controller.UserResponse{
+			Response: controller.Response{StatusCode: 0},
+			User:     *userInfo,
 		}
 	} else {
 		*reply = controller.UserResponse{
