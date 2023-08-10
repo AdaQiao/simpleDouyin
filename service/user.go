@@ -20,9 +20,10 @@ type UserService interface {
 	UserInfo(token string, reply *controller.UserResponse)
 }
 
+var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
+
 // 用户服务实现
 type UserServiceImpl struct {
-	repo *db.MySQLUserRepository
 }
 
 // 用户注册
@@ -33,7 +34,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 	*reply = controller.UserLoginResponse{
 		Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
 	}*/
-	_, err := s.repo.GetUser(token)
+	_, err := repo.GetUser(token)
 	if err == nil {
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
@@ -41,7 +42,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 	} else {
 
 		// 调用存储库的 CreateUser 函数执行插入操作
-		if err := s.repo.CreateUser(user); err != nil {
+		if err := repo.CreateUser(user); err != nil {
 			log.Println("插入用户数据失败:", err)
 			return err
 		}
@@ -79,7 +80,7 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 	return nil*/
 
 	token := user.Username + user.Password
-	userInfo, err := s.repo.GetUser(token)
+	userInfo, err := repo.GetUser(token)
 	if err == nil {
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 0},
@@ -108,7 +109,7 @@ func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse)
 	}
 	return nil*/
 
-	userInfo, err := s.repo.GetUser(token)
+	userInfo, err := repo.GetUser(token)
 	if err == nil {
 		*reply = controller.UserResponse{
 			Response: controller.Response{StatusCode: 0},
@@ -124,10 +125,8 @@ func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse)
 
 func RunUserServer() {
 	// 创建用户服务实例
-	repo := db.NewMySQLUserRepository()
-	userService := &UserServiceImpl{
-		repo: repo,
-	}
+
+	userService := &UserServiceImpl{}
 
 	// 注册RPC服务
 	rpc.Register(userService)
