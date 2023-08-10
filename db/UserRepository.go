@@ -3,7 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/cpl/simple-demo/controller"
+	"github.com/RaymondCode/simple-demo/controller"
+
 	"log"
 )
 
