@@ -22,7 +22,7 @@ type UserService interface {
 
 // 用户服务实现
 type UserServiceImpl struct {
-	repo db.UserRepository
+	repo db.MySQLUserRepository
 }
 
 // 用户注册
