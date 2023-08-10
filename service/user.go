@@ -31,37 +31,29 @@ type UserServiceImpl struct {
 func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controller.UserLoginResponse) error {
 	//检查用户名是否已存在
 	token := user.Username + user.Password
-	_, err := repo.GetUser(token)
-	if err == nil {
-		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
-		}
-	} else {
-		// 调用存储库的 CreateUser 函数执行插入操作
-		if err := repo.CreateUser(user); err != nil {
-			if strings.Contains(err.Error(), "已存在") {
-				// 处理唯一约束错误
-				*reply = controller.UserLoginResponse{
-					Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
-				}
-				return nil
+	// 调用存储库的 CreateUser 函数执行插入操作
+	if err := repo.CreateUser(user); err != nil {
+		if strings.Contains(err.Error(), "已存在") {
+			// 处理唯一约束错误
+			*reply = controller.UserLoginResponse{
+				Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
 			}
-			log.Println("插入用户数据失败:", err)
-			return err
+			return nil
 		}
+		log.Println("插入用户数据失败:", err)
+		return err
+	}
 
-		atomic.AddInt64(&controller.UserIdSequence, 1)
-		newUser := controller.User{
-			Id:   controller.UserIdSequence,
-			Name: user.Username,
-		}
-		controller.UsersLoginInfo[token] = newUser
-		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 0},
-			UserId:   controller.UserIdSequence,
-			Token:    token,
-		}
-
+	atomic.AddInt64(&controller.UserIdSequence, 1)
+	newUser := controller.User{
+		Id:   controller.UserIdSequence,
+		Name: user.Username,
+	}
+	controller.UsersLoginInfo[token] = newUser
+	*reply = controller.UserLoginResponse{
+		Response: controller.Response{StatusCode: 0},
+		UserId:   controller.UserIdSequence,
+		Token:    token,
 	}
 	return nil
 }
