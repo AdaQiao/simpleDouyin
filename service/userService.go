@@ -33,10 +33,11 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 	token := user.Username + user.Password
 	// 调用存储库的 CreateUser 函数执行插入操作
 	if err := repo.CreateUser(user); err != nil {
-		if strings.Contains(err.Error(), "已存在") {
+		if strings.Contains(err.Error(), "Duplicate entry") {
 			// 处理唯一约束错误
+			errorMsg := fmt.Sprintf("用户名 %s 已存在\n", user.Username)
 			*reply = controller.UserLoginResponse{
-				Response: controller.Response{StatusCode: 1, StatusMsg: err.Error()},
+				Response: controller.Response{StatusCode: 1, StatusMsg: errorMsg},
 			}
 			return nil
 		}
