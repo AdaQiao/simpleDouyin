@@ -9,7 +9,7 @@ import (
 
 func NewMySQLDB() (*sql.DB, error) {
 	// 设置数据库连接参数
-	db, err := sql.Open("mysql", "username:password@tcp(hostname:port)/database_name")
+	db, err := sql.Open("mysql", "root:tCzAhYFo@tcp(172.16.32.27:49721)/simpleDouyin")
 	if err != nil {
 		return nil, err
 	}
