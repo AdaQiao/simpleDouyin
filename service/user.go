@@ -28,6 +28,7 @@ type UserServiceImpl struct {
 // 用户注册
 func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controller.UserLoginResponse) error {
 	//检查用户名是否已存在
+	fmt.Println("aaaaqqqqq1111144efwefeargeargtgerg")
 	token := user.Username + user.Password
 	/*if _, exist := controller.UsersLoginInfo[token]; exist {
 	*reply = controller.UserLoginResponse{
