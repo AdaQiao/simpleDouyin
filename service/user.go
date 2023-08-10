@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/RaymondCode/simple-demo/db"
+	"strings"
 
 	"log"
 	"net"
@@ -29,21 +30,22 @@ type UserServiceImpl struct {
 // 用户注册
 func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controller.UserLoginResponse) error {
 	//检查用户名是否已存在
-	fmt.Println("aaaaqqqqq1111144efwefeargeargtgerg")
 	token := user.Username + user.Password
-	/*if _, exist := controller.UsersLoginInfo[token]; exist {
-	*reply = controller.UserLoginResponse{
-		Response: controller.Response{StatusCode: 1, StatusMsg: "User already exist"},
-	}*/
 	_, err := repo.GetUser(token)
 	if err == nil {
 		*reply = controller.UserLoginResponse{
 			Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
 		}
 	} else {
-
 		// 调用存储库的 CreateUser 函数执行插入操作
 		if err := repo.CreateUser(user); err != nil {
+			if strings.Contains(err.Error(), "已存在") {
+				// 处理唯一约束错误
+				*reply = controller.UserLoginResponse{
+					Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
+				}
+				return nil
+			}
 			log.Println("插入用户数据失败:", err)
 			return err
 		}
@@ -66,20 +68,6 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 
 // 用户登录
 func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
-	/*token := user.Username + user.Password
-	if userInfo, exist := controller.UsersLoginInfo[token]; exist {
-		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 0},
-			UserId:   userInfo.Id,
-			Token:    token,
-		}
-	} else {
-		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-		}
-	}
-	return nil*/
-
 	token := user.Username + user.Password
 	userInfo, err := repo.GetUser(token)
 	if err == nil {
@@ -98,18 +86,6 @@ func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.
 
 // 用户信息
 func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse) error {
-	/*if userInfo, exist := controller.UsersLoginInfo[token]; exist {
-		*reply = controller.UserResponse{
-			Response: controller.Response{StatusCode: 0},
-			User:     userInfo,
-		}
-	} else {
-		*reply = controller.UserResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-		}
-	}
-	return nil*/
-
 	userInfo, err := repo.GetUser(token)
 	if err == nil {
 		*reply = controller.UserResponse{

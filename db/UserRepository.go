@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
+	"strings"
 
 	"log"
 )
@@ -30,6 +31,11 @@ func (repo *MySQLUserRepository) CreateUser(user controller.UserPassword) error 
 	token := user.Username + user.Password
 	_, err := dB.Exec(query, token, user.Username, 0, 0, 0)
 	if err != nil {
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			// 处理唯一约束错误
+			log.Printf("用户名 %s 已存在\n", user.Username)
+			return fmt.Errorf("用户名 %s 已存在", user.Username)
+		}
 		log.Println("插入用户数据失败:", err)
 		return err
 	}
