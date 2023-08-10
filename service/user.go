@@ -8,6 +8,8 @@ import (
 
 	"net/rpc"
 
+	"sync/atomic"
+
 	"github.com/cpl/simple-demo/db"
 )
 
@@ -44,17 +46,17 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 			return err
 		}
 
-		/*		atomic.AddInt64(&controller.UserIdSequence, 1)
-				newUser := controller.User{
-					Id:   controller.UserIdSequence,
-					Name: user.Username,
-				}
-				controller.UsersLoginInfo[token] = newUser
-				*reply = controller.UserLoginResponse{
-					Response: controller.Response{StatusCode: 0},
-					UserId:   controller.UserIdSequence,
-					Token:    token,
-				}*/
+		atomic.AddInt64(&controller.UserIdSequence, 1)
+		newUser := controller.User{
+			Id:   controller.UserIdSequence,
+			Name: user.Username,
+		}
+		controller.UsersLoginInfo[token] = newUser
+		*reply = controller.UserLoginResponse{
+			Response: controller.Response{StatusCode: 0},
+			UserId:   controller.UserIdSequence,
+			Token:    token,
+		}
 
 	}
 	return nil
