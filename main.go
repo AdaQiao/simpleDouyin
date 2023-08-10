@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/cpl/simple-demo/db"
-	"github.com/cpl/simple-demo/service"
+	"github.com/RaymondCode/simple-demo/db"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"log"
 )
