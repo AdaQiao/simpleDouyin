@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/RaymondCode/simple-demo/controller"
+	"github.com/cpl/simple-demo/controller"
 	"io"
 	"net"
 	"sync"

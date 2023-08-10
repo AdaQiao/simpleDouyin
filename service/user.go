@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"github.com/RaymondCode/simple-demo/controller"
+	"github.com/cpl/simple-demo/controller"
 	"log"
 	"net"
 
