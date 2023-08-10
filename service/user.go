@@ -22,7 +22,7 @@ type UserService interface {
 
 // 用户服务实现
 type UserServiceImpl struct {
-	repo db.UserRepository
+	repo *db.MySQLUserRepository
 }
 
 // 用户注册
@@ -124,7 +124,10 @@ func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse)
 
 func RunUserServer() {
 	// 创建用户服务实例
-	userService := &UserServiceImpl{}
+	repo := db.NewMySQLUserRepository()
+	userService := &UserServiceImpl{
+		repo: repo,
+	}
 
 	// 注册RPC服务
 	rpc.Register(userService)
