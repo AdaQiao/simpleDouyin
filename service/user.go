@@ -36,7 +36,7 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 		if strings.Contains(err.Error(), "已存在") {
 			// 处理唯一约束错误
 			*reply = controller.UserLoginResponse{
-				Response: controller.Response{StatusCode: 1, StatusMsg: "User already exists"},
+				Response: controller.Response{StatusCode: 1, StatusMsg: err.Error()},
 			}
 			return nil
 		}
