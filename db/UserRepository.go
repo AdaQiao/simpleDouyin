@@ -46,11 +46,12 @@ func (repo *MySQLUserRepository) GetUser(token string) (*controller.User, error)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// 用户不存在
+			fmt.Println("用户不存在:", token)
 			return nil, fmt.Errorf("用户不存在")
 		}
 		log.Println("查询用户失败:", err)
 		return nil, err
 	}
-
+	fmt.Printf("查询结果 - ID: %d, Name: %s, FollowCount: %d, FollowerCount: %d, IsFollow: %t\n", user.Id, user.Name, user.FollowCount, user.FollowerCount, user.IsFollow)
 	return user, nil
 }
