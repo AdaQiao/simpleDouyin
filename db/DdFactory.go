@@ -40,6 +40,13 @@ func InitDB() error {
 	return nil
 }
 
-func GetDB() *sql.DB {
-	return dB
+func CloseDB() error {
+	err := dB.Close()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("MySQL数据库连接关闭")
+
+	return nil
 }

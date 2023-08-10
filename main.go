@@ -8,7 +8,11 @@ import (
 )
 
 func main() {
-	db.InitDB()
+	err := db.InitDB()
+	if err != nil {
+		log.Fatal("初始化数据库连接失败:", err)
+	}
+	defer db.CloseDB()
 	go service.RunMessageServer()
 	go service.RunUserServer()
 	r := gin.Default()
@@ -16,9 +20,4 @@ func main() {
 	initRouter(r)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-
-	err := db.GetDB().Close()
-	if err != nil {
-		log.Fatal("关闭数据库连接失败:", err)
-	}
 }
