@@ -39,7 +39,6 @@ func (repo *MySQLUserRepository) CreateUser(user controller.UserPassword) error 
 
 func (repo *MySQLUserRepository) GetUser(token string) (*controller.User, error) {
 	// 执行查询用户数据的SQL语句
-	fmt.Println("1111144efwefeargeargtgerg")
 	query := "SELECT id, name, follow_count, follower_count, is_follow FROM users WHERE token = ?"
 	row := dB.QueryRow(query, token)
 
