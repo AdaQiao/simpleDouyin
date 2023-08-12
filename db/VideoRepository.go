@@ -48,21 +48,6 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) (
 	}
 	defer rows.Close()
 	var videos []model.Video
-	var video model.Video
-	err = rows.Scan(
-		&video.Author.Id,
-		&video.PlayUrl,
-		&video.CoverUrl,
-		&video.FavoriteCount,
-		&video.CommentCount,
-		&video.IsFavorite,
-		&video.Title,
-	)
-	if err != nil {
-		log.Println("扫描视频数据失败:", err)
-		return nil, err
-	}
-	videos = append(videos, video)
 	for rows.Next() {
 		var video model.Video
 		err := rows.Scan(
