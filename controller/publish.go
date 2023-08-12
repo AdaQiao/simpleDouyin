@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/rpc"
 	"path/filepath"
+	"strconv"
 )
 
 var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
@@ -72,7 +73,8 @@ func PublishList(c *gin.Context) {
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
 	}
-	user_id := c.PostForm("user_id")
+	userIDStr := c.PostForm("user_id")
+	user_id, err := strconv.ParseInt(userIDStr, 10, 64)
 	// 调用远程注册方法
 	var reply model.VideoListResponse
 	err = client.Call("PublishServiceImpl.PublishList", model.UserIdToken{

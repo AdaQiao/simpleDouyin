@@ -11,6 +11,6 @@ type UploadViewReq struct {
 	Title    string
 }
 type UserIdToken struct {
-	UserId string
+	UserId int64
 	Token  string
 }

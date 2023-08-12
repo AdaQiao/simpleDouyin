@@ -9,7 +9,7 @@ import (
 
 type VideoRepository interface {
 	CreateVideo(video model.Video, token string) error
-	GetVideoByToken(token string) ([]model.Video, error)
+	GetVideoByToken(token string, userId int64) ([]model.Video, error)
 }
 
 type MySQLVideoRepository struct {
@@ -35,12 +35,10 @@ func (repo *MySQLVideoRepository) CreateVideo(video model.Video, token string) e
 	return nil
 }
 
-func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) ([]model.Video, error) {
+func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId int64) ([]model.Video, error) {
 	// 执行查询视频数据的SQL语句
 	query := `
-		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title
-		FROM videos
-		WHERE  author_id = ?
+		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title FROM videos WHERE  author_id = ?
 	`
 	rows, err := dB.Query(query, userId)
 	if err != nil {
