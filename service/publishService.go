@@ -11,30 +11,64 @@ import (
 
 type PublishService interface {
 	Publish(req model.UploadViewReq, reply *model.Response) error
-	PublishList(reply *model.VideoListResponse)
+	PublishList(token string, reply *model.VideoListResponse) error
 }
 
 type PublishServiceImpl struct {
-	repo *db.MySQLUserRepository
+	UserRepo  *db.MySQLUserRepository
+	VideoRepo *db.MySQLVideoRepository
 }
 
 func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Response) error {
-	user, err := s.repo.GetUser(req.Token)
+	user, err := s.UserRepo.GetUser(req.Token)
 	if err != nil {
 		return fmt.Errorf("user doesn't exist")
 	}
-	_ = user.Id
+	newVideo := model.Video{
+		Author:        *user,
+		PlayUrl:       req.ViewUrl,
+		FavoriteCount: 0,
+		CommentCount:  0,
+		CoverUrl:      req.CoverUrl,
+		IsFavorite:    false,
+		Title:         req.Title,
+	}
+	err = s.VideoRepo.CreateVideo(newVideo, req.Token)
+	if err != nil {
+		return err
+	}
+	*reply = model.Response{
+		StatusCode: 0,
+		StatusMsg:  req.Title + " uploaded successfully",
+	}
 	return nil
 }
-func (s *PublishServiceImpl) PublishList(reply *model.VideoListResponse) {
-
+func (s *PublishServiceImpl) PublishList(token string, reply *model.VideoListResponse) error {
+	Videos, err := s.VideoRepo.GetVideoByToken(token)
+	if err != nil {
+		*reply = model.VideoListResponse{
+			Response: model.Response{
+				StatusCode: 0,
+			},
+			VideoList: nil,
+		}
+		return nil
+	}
+	*reply = model.VideoListResponse{
+		Response: model.Response{
+			StatusCode: 0,
+		},
+		VideoList: Videos,
+	}
+	return nil
 }
 
 func RunPublishServer() {
 	// 创建服务实例
 
 	publishService := &PublishServiceImpl{
-		repo: db.NewMySQLUserRepository(),
+		UserRepo:  db.NewMySQLUserRepository(),
+		VideoRepo: db.NewMySQLVideoRepository(),
 	}
 
 	// 注册RPC服务
