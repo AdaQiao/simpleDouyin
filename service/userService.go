@@ -32,7 +32,7 @@ func (s *UserServiceImpl) Register(user model.UserPassword, reply *model.UserLog
 	//检查用户名是否已存在
 	token := user.Username + user.Password
 	// 调用存储库的 CreateUser 函数执行插入操作
-	if err := repo.CreateUser(user); err != nil {
+	if err := s.repo.CreateUser(user); err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
 			// 处理唯一约束错误
 			errorMsg := fmt.Sprintf("用户名 %s 已存在\n", user.Username)
@@ -62,7 +62,7 @@ func (s *UserServiceImpl) Register(user model.UserPassword, reply *model.UserLog
 // 用户登录
 func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginResponse) error {
 	token := user.Username + user.Password
-	userInfo, err := repo.GetUser(token)
+	userInfo, err := s.repo.GetUser(token)
 	if err == nil {
 		*reply = model.UserLoginResponse{
 			Response: model.Response{StatusCode: 0},
@@ -79,7 +79,7 @@ func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginR
 
 // 用户信息
 func (s *UserServiceImpl) UserInfo(token string, reply *model.UserResponse) error {
-	userInfo, err := repo.GetUser(token)
+	userInfo, err := s.repo.GetUser(token)
 	if err == nil {
 		*reply = model.UserResponse{
 			Response: model.Response{StatusCode: 0},
