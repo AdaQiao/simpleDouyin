@@ -15,7 +15,7 @@ var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 	user, err := repo.GetUser(token)
-	if err == nil {
+	if err != nil {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
 	}
