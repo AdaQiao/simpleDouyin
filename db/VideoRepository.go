@@ -39,7 +39,7 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) (
 	query := `
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title
 		FROM videos
-		WHERE token = ? AND author_id = ?
+		WHERE  author_id = ?
 	`
 	rows, err := dB.Query(query, token, userId)
 	if err != nil {
