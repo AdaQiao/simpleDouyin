@@ -2,10 +2,13 @@ package controller
 
 import (
 	"fmt"
+	"github.com/RaymondCode/simple-demo/db"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
 )
+
+var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
 
 type VideoListResponse struct {
 	Response
@@ -15,8 +18,8 @@ type VideoListResponse struct {
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
-
-	if _, exist := UsersLoginInfo[token]; !exist {
+	user, err := repo.GetUser(token)
+	if err == nil {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
 	}
@@ -31,7 +34,7 @@ func Publish(c *gin.Context) {
 	}
 
 	filename := filepath.Base(data.Filename)
-	user := UsersLoginInfo[token]
+
 	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
 	saveFile := filepath.Join("./public/", finalName)
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
