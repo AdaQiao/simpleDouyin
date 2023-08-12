@@ -68,8 +68,8 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	token := c.PostForm("token")
-	userIDStr := c.PostForm("user_id")
+	token := c.Query("token")
+	userIDStr := c.Query("user_id")
 	fmt.Println(token)
 	fmt.Println(userIDStr)
 	// 连接到远程RPC服务器
