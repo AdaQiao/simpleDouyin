@@ -45,7 +45,6 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId int64) ([
 		log.Println("查询视频失败:", err)
 		return nil, err
 	}
-	defer rows.Close()
 	fmt.Printf("%v\n", rows)
 	var videos []model.Video
 	for rows.Next() {
