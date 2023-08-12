@@ -13,7 +13,7 @@ type Video struct {
 	FavoriteCount int64  `json:"favorite_count,omitempty"`
 	CommentCount  int64  `json:"comment_count,omitempty"`
 	IsFavorite    bool   `json:"is_favorite,omitempty"`
-	title         string `json:"title" json:"title,omitempty"`
+	Title         string `json:"title" json:"title,omitempty"`
 }
 
 type Comment struct {

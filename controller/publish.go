@@ -51,7 +51,7 @@ func Publish(c *gin.Context) {
 	}
 
 	// 调用远程注册方法
-	var reply model.UserLoginResponse
+	var reply model.Response
 	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: saveFile, CoverUrl: ""}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
