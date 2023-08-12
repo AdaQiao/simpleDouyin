@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	_ "fmt"
 	"github.com/RaymondCode/simple-demo/model"
 	"log"
@@ -47,6 +48,7 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) (
 		return nil, err
 	}
 	defer rows.Close()
+	fmt.Printf("%v\n", rows)
 	var videos []model.Video
 	for rows.Next() {
 		var video model.Video
@@ -70,6 +72,6 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) (
 		log.Println("遍历视频结果失败:", err)
 		return nil, err
 	}
-
+	fmt.Println(len(videos))
 	return videos, nil
 }
