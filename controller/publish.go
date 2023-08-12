@@ -16,6 +16,8 @@ var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
+	title := c.PostForm("title")
+	fmt.Println(title)
 	user, err := repo.GetUser(token)
 	if err != nil {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
@@ -50,7 +52,7 @@ func Publish(c *gin.Context) {
 
 	// 调用远程注册方法
 	var reply model.UserLoginResponse
-	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Token: token, ViewUrl: saveFile, CoverUrl: ""}, &reply)
+	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: saveFile, CoverUrl: ""}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
