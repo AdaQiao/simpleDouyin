@@ -75,7 +75,7 @@ func PublishList(c *gin.Context) {
 
 	// 调用远程注册方法
 	var reply model.VideoListResponse
-	err = client.Call("PublishServiceImpl.Publish", token, &reply)
+	err = client.Call("PublishServiceImpl.PublishList", token, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
