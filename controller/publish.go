@@ -72,10 +72,13 @@ func PublishList(c *gin.Context) {
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
 	}
-
+	user_id := c.PostForm("user_id")
 	// 调用远程注册方法
 	var reply model.VideoListResponse
-	err = client.Call("PublishServiceImpl.PublishList", token, &reply)
+	err = client.Call("PublishServiceImpl.PublishList", model.UserIdToken{
+		Token:  token,
+		UserId: user_id,
+	}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}

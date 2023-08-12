@@ -11,7 +11,7 @@ import (
 
 type PublishService interface {
 	Publish(req model.UploadViewReq, reply *model.Response) error
-	PublishList(token string, reply *model.VideoListResponse) error
+	PublishList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error
 }
 
 type PublishServiceImpl struct {
@@ -43,10 +43,9 @@ func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Respo
 	}
 	return nil
 }
-func (s *PublishServiceImpl) PublishList(token string, reply *model.VideoListResponse) error {
-	Videos, err := s.VideoRepo.GetVideoByToken(token)
+func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error {
+	Videos, err := s.VideoRepo.GetVideoByToken(userIDToken.Token, userIDToken.UserId)
 	if err != nil {
-		fmt.Println("dddddddddddddd")
 		*reply = model.VideoListResponse{
 			Response: model.Response{
 				StatusCode: 0,

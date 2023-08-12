@@ -10,3 +10,7 @@ type UploadViewReq struct {
 	CoverUrl string
 	Title    string
 }
+type UserIdToken struct {
+	UserId string
+	Token  string
+}

@@ -33,14 +33,14 @@ func (repo *MySQLVideoRepository) CreateVideo(video model.Video, token string) e
 	return nil
 }
 
-func (repo *MySQLVideoRepository) GetVideoByToken(token string) ([]model.Video, error) {
+func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) ([]model.Video, error) {
 	// 执行查询视频数据的SQL语句
 	query := `
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title
 		FROM videos
-		WHERE token = ?
+		WHERE token = ? AND author_id = ?
 	`
-	rows, err := dB.Query(query, token)
+	rows, err := dB.Query(query, token, userId)
 	if err != nil {
 		log.Println("查询视频失败:", err)
 		return nil, err
