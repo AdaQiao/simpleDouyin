@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/RaymondCode/simple-demo/model"
 	"log"
+  _"fmt"
 )
 
 type VideoRepository interface {
@@ -46,7 +47,6 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) (
 		return nil, err
 	}
 	defer rows.Close()
-
 	var videos []model.Video
 	for rows.Next() {
 		var video model.Video
