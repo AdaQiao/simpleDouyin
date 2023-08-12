@@ -41,7 +41,7 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId string) (
 		FROM videos
 		WHERE  author_id = ?
 	`
-	rows, err := dB.Query(query, token, userId)
+	rows, err := dB.Query(query, userId)
 	if err != nil {
 		log.Println("查询视频失败:", err)
 		return nil, err
