@@ -19,8 +19,11 @@ type PublishServiceImpl struct {
 }
 
 func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Response) error {
-	user := s.repo.GetUser(req.Token)
-
+	user, err := s.repo.GetUser(req.Token)
+	if err != nil {
+		return fmt.Errorf("user doesn't exist")
+	}
+	_ = user.Id
 	return nil
 }
 func (s *PublishServiceImpl) PublishList(reply *model.VideoListResponse) {

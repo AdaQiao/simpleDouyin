@@ -8,4 +8,5 @@ type UploadViewReq struct {
 	Token    string
 	ViewUrl  string
 	CoverUrl string
+	Title    string
 }

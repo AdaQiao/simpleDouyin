@@ -9,6 +9,7 @@ var DemoVideos = []Video{
 		FavoriteCount: 0,
 		CommentCount:  0,
 		IsFavorite:    false,
+		title:         "bear",
 	},
 }
 
