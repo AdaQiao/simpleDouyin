@@ -10,6 +10,7 @@ import (
 type UserRepository interface {
 	CreateUser(user model.UserPassword) error
 	GetUser(token string) (*model.User, error)
+	GetUserId(token string) (int64, error)
 }
 
 type MySQLUserRepository struct {
@@ -54,4 +55,22 @@ func (repo *MySQLUserRepository) GetUser(token string) (*model.User, error) {
 	}
 	fmt.Printf("查询结果 - ID: %d, Name: %s, FollowCount: %d, FollowerCount: %d, IsFollow: %t\n", user.Id, user.Name, user.FollowCount, user.FollowerCount, user.IsFollow)
 	return user, nil
+}
+func (repo *MySQLUserRepository) GetUserId(token string) (int64, error) {
+	// 执行查询用户数据的SQL语句
+	query := "SELECT id FROM users WHERE token = ?"
+	row := dB.QueryRow(query, token)
+
+	var userId int64
+	err := row.Scan(&userId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// 用户不存在
+			fmt.Println("用户不存在:", token)
+			return userId, fmt.Errorf("用户不存在")
+		}
+		log.Println("查询用户失败:", err)
+		return -1, err
+	}
+	return userId, nil
 }

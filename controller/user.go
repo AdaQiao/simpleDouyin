@@ -22,11 +22,10 @@ var UsersLoginInfo = map[string]model.User{
 // user data will be cleared every time the server starts
 // test data: username=zhanglei, password=douyin
 
-var UserIdSequence = int64(1)
-
 func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
+
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9091")
 	if err != nil {

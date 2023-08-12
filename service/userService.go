@@ -11,8 +11,6 @@ import (
 	"net"
 
 	"net/rpc"
-
-	"sync/atomic"
 )
 
 // 用户服务接口
@@ -45,15 +43,18 @@ func (s *UserServiceImpl) Register(user model.UserPassword, reply *model.UserLog
 		return err
 	}
 
-	atomic.AddInt64(&controller.UserIdSequence, 1)
+	userId, err := s.repo.GetUserId(token)
+	if err != nil {
+		return err
+	}
 	newUser := model.User{
-		Id:   controller.UserIdSequence,
+		Id:   userId,
 		Name: user.Username,
 	}
 	controller.UsersLoginInfo[token] = newUser
 	*reply = model.UserLoginResponse{
 		Response: model.Response{StatusCode: 0},
-		UserId:   controller.UserIdSequence,
+		UserId:   userId,
 		Token:    token,
 	}
 	return nil
