@@ -10,7 +10,7 @@ import (
 )
 
 type PublishService interface {
-	Publish(token string, reply *model.Response) error
+	Publish(model, reply *model.Response) error
 	PublishList(reply *model.VideoListResponse)
 }
 
