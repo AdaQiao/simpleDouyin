@@ -5,7 +5,7 @@ type VideoListResponse struct {
 	VideoList []Video `json:"video_list"`
 }
 type UploadViewReq struct {
-	token    string
-	viewUrl  string
-	coverUrl string
+	Token    string
+	ViewUrl  string
+	CoverUrl string
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type PublishService interface {
-	Publish(req model.uploa, reply *model.Response) error
+	Publish(req model.UploadViewReq, reply *model.Response) error
 	PublishList(reply *model.VideoListResponse)
 }
 
@@ -18,7 +18,9 @@ type PublishServiceImpl struct {
 	repo *db.MySQLUserRepository
 }
 
-func (s *PublishServiceImpl) Publish(token string, reply *model.Response) error {
+func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Response) error {
+	user := s.repo.GetUser(req.Token)
+
 	return nil
 }
 func (s *PublishServiceImpl) PublishList(reply *model.VideoListResponse) {
