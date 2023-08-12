@@ -1,13 +1,14 @@
 package controller
 
 import (
+	"github.com/RaymondCode/simple-demo/model"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"net/rpc"
 )
 
-var UsersLoginInfo = map[string]User{
+var UsersLoginInfo = map[string]model.User{
 	"zhangleidouyin": {
 		Id:            1,
 		Name:          "zhanglei",
@@ -23,22 +24,6 @@ var UsersLoginInfo = map[string]User{
 
 var UserIdSequence = int64(1)
 
-type UserLoginResponse struct {
-	Response
-	UserId int64  `json:"user_id,omitempty"`
-	Token  string `json:"token"`
-}
-
-type UserResponse struct {
-	Response
-	User User `json:"user"`
-}
-
-type UserPassword struct {
-	Username string
-	Password string
-}
-
 func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
@@ -49,8 +34,8 @@ func Register(c *gin.Context) {
 	}
 
 	// 调用远程注册方法
-	var reply UserLoginResponse
-	err = client.Call("UserServiceImpl.Register", UserPassword{Username: username, Password: password}, &reply)
+	var reply model.UserLoginResponse
+	err = client.Call("UserServiceImpl.Register", model.UserPassword{Username: username, Password: password}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
@@ -67,8 +52,8 @@ func Login(c *gin.Context) {
 		log.Fatal("RPC连接失败：", err)
 	}
 	// 调用远程登录方法
-	var reply UserLoginResponse
-	err = client.Call("UserServiceImpl.Login", UserPassword{Username: username, Password: password}, &reply)
+	var reply model.UserLoginResponse
+	err = client.Call("UserServiceImpl.Login", model.UserPassword{Username: username, Password: password}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
@@ -83,7 +68,7 @@ func UserInfo(c *gin.Context) {
 		log.Fatal("RPC连接失败：", err)
 	}
 	//
-	var reply UserResponse
+	var reply model.UserResponse
 	err = client.Call("UserServiceImpl.UserInfo", token, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)

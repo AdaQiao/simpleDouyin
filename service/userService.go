@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/RaymondCode/simple-demo/db"
+	"github.com/RaymondCode/simple-demo/model"
 	"strings"
 
 	"log"
@@ -16,9 +17,9 @@ import (
 
 // 用户服务接口
 type UserService interface {
-	Register(user controller.UserPassword, reply *controller.UserLoginResponse) error
-	Login(user controller.UserPassword, reply *controller.UserLoginResponse) error
-	UserInfo(token string, reply *controller.UserResponse)
+	Register(user model.UserPassword, reply *model.UserLoginResponse) error
+	Login(user model.UserPassword, reply *model.UserLoginResponse) error
+	UserInfo(token string, reply *model.UserResponse)
 }
 
 var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
@@ -28,7 +29,7 @@ type UserServiceImpl struct {
 }
 
 // 用户注册
-func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controller.UserLoginResponse) error {
+func (s *UserServiceImpl) Register(user model.UserPassword, reply *model.UserLoginResponse) error {
 	//检查用户名是否已存在
 	token := user.Username + user.Password
 	// 调用存储库的 CreateUser 函数执行插入操作
@@ -36,8 +37,8 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 		if strings.Contains(err.Error(), "Duplicate entry") {
 			// 处理唯一约束错误
 			errorMsg := fmt.Sprintf("用户名 %s 已存在\n", user.Username)
-			*reply = controller.UserLoginResponse{
-				Response: controller.Response{StatusCode: 1, StatusMsg: errorMsg},
+			*reply = model.UserLoginResponse{
+				Response: model.Response{StatusCode: 1, StatusMsg: errorMsg},
 			}
 			return nil
 		}
@@ -46,13 +47,13 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 	}
 
 	atomic.AddInt64(&controller.UserIdSequence, 1)
-	newUser := controller.User{
+	newUser := model.User{
 		Id:   controller.UserIdSequence,
 		Name: user.Username,
 	}
 	controller.UsersLoginInfo[token] = newUser
-	*reply = controller.UserLoginResponse{
-		Response: controller.Response{StatusCode: 0},
+	*reply = model.UserLoginResponse{
+		Response: model.Response{StatusCode: 0},
 		UserId:   controller.UserIdSequence,
 		Token:    token,
 	}
@@ -60,34 +61,34 @@ func (s *UserServiceImpl) Register(user controller.UserPassword, reply *controll
 }
 
 // 用户登录
-func (s *UserServiceImpl) Login(user controller.UserPassword, reply *controller.UserLoginResponse) error {
+func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginResponse) error {
 	token := user.Username + user.Password
 	userInfo, err := repo.GetUser(token)
 	if err == nil {
-		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 0},
+		*reply = model.UserLoginResponse{
+			Response: model.Response{StatusCode: 0},
 			UserId:   userInfo.Id,
 			Token:    token,
 		}
 	} else {
-		*reply = controller.UserLoginResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		*reply = model.UserLoginResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
 	}
 	return nil
 }
 
 // 用户信息
-func (s *UserServiceImpl) UserInfo(token string, reply *controller.UserResponse) error {
+func (s *UserServiceImpl) UserInfo(token string, reply *model.UserResponse) error {
 	userInfo, err := repo.GetUser(token)
 	if err == nil {
-		*reply = controller.UserResponse{
-			Response: controller.Response{StatusCode: 0},
+		*reply = model.UserResponse{
+			Response: model.Response{StatusCode: 0},
 			User:     *userInfo,
 		}
 	} else {
-		*reply = controller.UserResponse{
-			Response: controller.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		*reply = model.UserResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
 	}
 	return nil

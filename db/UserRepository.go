@@ -3,13 +3,13 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/RaymondCode/simple-demo/controller"
+	"github.com/RaymondCode/simple-demo/model"
 	"log"
 )
 
 type UserRepository interface {
-	CreateUser(user controller.UserPassword) error
-	GetUser(token string) (*controller.User, error)
+	CreateUser(user model.UserPassword) error
+	GetUser(token string) (*model.User, error)
 }
 
 type MySQLUserRepository struct {
@@ -19,7 +19,7 @@ func NewMySQLUserRepository() *MySQLUserRepository {
 	return &MySQLUserRepository{}
 }
 
-func (repo *MySQLUserRepository) CreateUser(user controller.UserPassword) error {
+func (repo *MySQLUserRepository) CreateUser(user model.UserPassword) error {
 	// 执行插入用户数据的SQL语句
 	query := `
 		INSERT INTO users (token, name, is_follow,follow_count, follower_count)
@@ -36,12 +36,12 @@ func (repo *MySQLUserRepository) CreateUser(user controller.UserPassword) error 
 	return nil
 }
 
-func (repo *MySQLUserRepository) GetUser(token string) (*controller.User, error) {
+func (repo *MySQLUserRepository) GetUser(token string) (*model.User, error) {
 	// 执行查询用户数据的SQL语句
 	query := "SELECT id, name, follow_count, follower_count, is_follow FROM users WHERE token = ?"
 	row := dB.QueryRow(query, token)
 
-	user := &controller.User{}
+	user := &model.User{}
 	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow)
 	if err != nil {
 		if err == sql.ErrNoRows {
