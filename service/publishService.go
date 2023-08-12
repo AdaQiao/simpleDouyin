@@ -46,7 +46,6 @@ func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Respo
 func (s *PublishServiceImpl) PublishList(token string, reply *model.VideoListResponse) error {
 	Videos, err := s.VideoRepo.GetVideoByToken(token)
 	if err != nil {
-		fmt.Println("dddddddddddddd")
 		*reply = model.VideoListResponse{
 			Response: model.Response{
 				StatusCode: 0,
