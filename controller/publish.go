@@ -18,8 +18,6 @@ var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
-	fmt.Println(title)
-	fmt.Println(token)
 	user, err := repo.GetUser(token)
 	if err != nil {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
@@ -70,8 +68,6 @@ func Publish(c *gin.Context) {
 func PublishList(c *gin.Context) {
 	token := c.Query("token")
 	userIDStr := c.Query("user_id")
-	fmt.Println(token)
-	fmt.Println(userIDStr)
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
 	if err != nil {
