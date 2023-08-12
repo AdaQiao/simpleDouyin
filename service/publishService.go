@@ -10,7 +10,7 @@ import (
 )
 
 type PublishService interface {
-	Publish(model, reply *model.Response) error
+	Publish(req model.uploa, reply *model.Response) error
 	PublishList(reply *model.VideoListResponse)
 }
 
