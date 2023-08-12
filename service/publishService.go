@@ -14,13 +14,12 @@ type PublishService interface {
 	PublishList(reply *model.VideoListResponse)
 }
 
-var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
-
 type PublishServiceImpl struct {
+	repo *db.MySQLUserRepository
 }
 
 func (s *PublishServiceImpl) Publish(token string, reply *model.Response) error {
-
+	return nil
 }
 func (s *PublishServiceImpl) PublishList(reply *model.VideoListResponse) {
 
@@ -29,7 +28,9 @@ func (s *PublishServiceImpl) PublishList(reply *model.VideoListResponse) {
 func RunPublishServer() {
 	// 创建服务实例
 
-	publishService := &PublishServiceImpl{}
+	publishService := &PublishServiceImpl{
+		repo: db.NewMySQLUserRepository(),
+	}
 
 	// 注册RPC服务
 	rpc.Register(publishService)
