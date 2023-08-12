@@ -19,6 +19,7 @@ func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
 	fmt.Println(title)
+	fmt.Println(token)
 	user, err := repo.GetUser(token)
 	if err != nil {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
@@ -68,12 +69,15 @@ func Publish(c *gin.Context) {
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
 	token := c.PostForm("token")
+	userIDStr := c.PostForm("user_id")
+	fmt.Println(token)
+	fmt.Println(userIDStr)
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
 	}
-	userIDStr := c.PostForm("user_id")
+
 	user_id, err := strconv.ParseInt(userIDStr, 10, 64)
 	// 调用远程注册方法
 	var reply model.VideoListResponse
