@@ -66,10 +66,24 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	c.JSON(http.StatusOK, model.VideoListResponse{
+	token := c.PostForm("token")
+	// 连接到远程RPC服务器
+	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
+	}
+
+	// 调用远程注册方法
+	var reply model.VideoListResponse
+	err = client.Call("PublishServiceImpl.Publish", token, &reply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
+	/*c.JSON(http.StatusOK, model.VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,
 		},
 		VideoList: model.DemoVideos,
-	})
+	})*/
 }
