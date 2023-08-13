@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/rpc"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 )
@@ -99,6 +100,27 @@ func Publish(c *gin.Context) {
 	objectURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
 	fmt.Println("Object URL:", objectURL)
 
+	// 使用 FFmpeg 进行视频截图
+	coverFilename := fmt.Sprintf("%d_cover.jpg", userId)
+	coverPath := filepath.Join("./covers", coverFilename)
+
+	cmd := exec.Command("ffmpeg", "-i", objectURL, "-ss", "00:00:01", "-vframes", "1", coverPath)
+	if err := cmd.Run(); err != nil {
+		fmt.Println("Error capturing video frame:", err)
+		return
+	}
+
+	// 将封面上传到 OSS
+	coverObjectKey := fmt.Sprintf("%d_cover.jpg", userId)
+	err = bucket.PutObjectFromFile(coverObjectKey, coverPath)
+	if err != nil {
+		fmt.Println("Error uploading cover image:", err)
+		return
+	}
+
+	coverURL, err := bucket.SignURL(coverObjectKey, oss.HTTPGet, 3600)
+	fmt.Println("coverURL: ", coverURL)
+
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
 	if err != nil {
@@ -107,7 +129,9 @@ func Publish(c *gin.Context) {
 	fmt.Println(saveFile)
 	// 调用远程注册方法
 	var reply model.Response
-	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: objectURL, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)
+	//err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: objectURL, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)
+	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: objectURL, CoverUrl: coverURL}, &reply)
+
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
