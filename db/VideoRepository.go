@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	_ "fmt"
 	"github.com/RaymondCode/simple-demo/model"
 	"log"
@@ -9,7 +8,7 @@ import (
 
 type VideoRepository interface {
 	CreateVideo(video model.Video, token string) error
-	GetVideoByToken(token string, userId int64) ([]model.Video, error)
+	GetVideoById(userId int64) ([]model.Video, error)
 }
 
 type MySQLVideoRepository struct {
@@ -35,19 +34,16 @@ func (repo *MySQLVideoRepository) CreateVideo(video model.Video, token string) e
 	return nil
 }
 
-func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId int64) ([]model.Video, error) {
+func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, error) {
 	// 执行查询视频数据的SQL语句
 	query := `
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title FROM videos WHERE  author_id = ?
 	`
 	rows, err := dB.Query(query, userId)
-	fmt.Println(userId)
-	fmt.Println(token)
 	if err != nil {
 		log.Println("查询视频失败:", err)
 		return nil, err
 	}
-	fmt.Printf("%v\n", rows)
 	var videos []model.Video
 	for rows.Next() {
 		var video model.Video
@@ -71,6 +67,5 @@ func (repo *MySQLVideoRepository) GetVideoByToken(token string, userId int64) ([
 		log.Println("遍历视频结果失败:", err)
 		return nil, err
 	}
-	fmt.Println(len(videos))
 	return videos, nil
 }

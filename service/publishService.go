@@ -44,7 +44,11 @@ func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Respo
 	return nil
 }
 func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error {
-	Videos, err := s.VideoRepo.GetVideoByToken(userIDToken.Token, userIDToken.UserId)
+	_, err := s.UserRepo.GetUserId(userIDToken.Token)
+	if err != nil {
+		return fmt.Errorf("user doesn't exist")
+	}
+	Videos, err := s.VideoRepo.GetVideoById(userIDToken.UserId)
 	if err != nil {
 		*reply = model.VideoListResponse{
 			Response: model.Response{

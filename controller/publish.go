@@ -18,7 +18,7 @@ var repo *db.MySQLUserRepository = db.NewMySQLUserRepository()
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
-	user, err := repo.GetUser(token)
+	userId, err := repo.GetUserId(token)
 	if err != nil {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
@@ -34,7 +34,7 @@ func Publish(c *gin.Context) {
 	}
 
 	filename := filepath.Base(data.Filename)
-	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
+	finalName := fmt.Sprintf("%d_%s", userId, filename)
 	saveFile := filepath.Join("./public/", finalName)
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
 		c.JSON(http.StatusOK, model.Response{
@@ -57,11 +57,6 @@ func Publish(c *gin.Context) {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
 	c.JSON(http.StatusOK, reply)
-
-	/*c.JSON(http.StatusOK, model.Response{
-		StatusCode: 0,
-		StatusMsg:  finalName + " uploaded successfully",
-	})*/
 }
 
 // PublishList all users have same publish video list
@@ -85,10 +80,4 @@ func PublishList(c *gin.Context) {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
 	c.JSON(http.StatusOK, reply)
-	/*c.JSON(http.StatusOK, model.VideoListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		VideoList: model.DemoVideos,
-	})*/
 }
