@@ -19,7 +19,7 @@ type FeedResponse struct {
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	VideoRepo = db.NewMySQLVideoRepository()
-	viseos, _ := VideoRepo.GetVideoByToken("qjwe123456", 3)
+	viseos, _ := VideoRepo.GetVideoById(3)
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  model.Response{StatusCode: 0},
 		VideoList: viseos,
