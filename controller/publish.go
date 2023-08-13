@@ -49,7 +49,7 @@ func Publish(c *gin.Context) {
 	if err != nil {
 		log.Fatal("RPC连接失败：", err)
 	}
-
+	fmt.Println(saveFile)
 	// 调用远程注册方法
 	var reply model.Response
 	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: saveFile, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)

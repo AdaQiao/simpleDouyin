@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	_ "fmt"
 	"github.com/RaymondCode/simple-demo/model"
 	"log"
@@ -61,6 +62,7 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 			return nil, err
 		}
 		videos = append(videos, video)
+		fmt.Println(video.PlayUrl)
 	}
 
 	if err := rows.Err(); err != nil {
