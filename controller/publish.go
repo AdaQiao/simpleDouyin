@@ -47,18 +47,18 @@ func Publish(c *gin.Context) {
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
 	if err != nil {
-		log.Fatal("RPC连接失败：", err)
+		log.Println("RPC连接失败：", err)
 	}
 	var finalURL string
 	err = client.Call("PublishServiceImpl.UploadVideoToOSS", model.FilenameAndFilepath{FileName: finalName, FilePath: saveFile}, &finalURL)
 	if err != nil {
-		log.Fatal("调用远程注册方法失败：", err)
+		log.Println("调用远程注册方法失败：", err)
 	}
 
 	var reply model.Response
 	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: finalURL, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)
 	if err != nil {
-		log.Fatal("调用远程注册方法失败：", err)
+		log.Println("调用远程注册方法失败：", err)
 	}
 	c.JSON(http.StatusOK, reply)
 
@@ -71,7 +71,7 @@ func PublishList(c *gin.Context) {
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
 	if err != nil {
-		log.Fatal("RPC连接失败：", err)
+		log.Println("RPC连接失败：", err)
 	}
 
 	user_id, err := strconv.ParseInt(userIDStr, 10, 64)
@@ -82,8 +82,7 @@ func PublishList(c *gin.Context) {
 		UserId: user_id,
 	}, &reply)
 	if err != nil {
-		c.JSON(http.StatusOK, nil)
-		log.Fatal("调用远程    注册方法失败：", err)
+		log.Println("调用远程注册方法失败：", err)
 	}
 	c.JSON(http.StatusOK, reply)
 }
