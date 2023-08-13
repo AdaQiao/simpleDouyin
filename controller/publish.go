@@ -82,7 +82,7 @@ func PublishList(c *gin.Context) {
 		UserId: user_id,
 	}, &reply)
 	if err != nil {
-		log.Fatal("调用远程注册方法失败：", err)
+		log.Fatal("调用远程    注册方法失败：", err)
 	}
 	c.JSON(http.StatusOK, reply)
 }
