@@ -78,6 +78,7 @@ func Publish(c *gin.Context) {
 
 	// 设置上传到 OSS 的文件名
 	objectKey := finalName
+	fmt.Println("Final name: ", finalName)
 
 	// 开始上传文件
 	err = bucket.PutObject(objectKey, file)
