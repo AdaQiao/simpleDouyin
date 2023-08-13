@@ -49,6 +49,7 @@ func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Respo
 func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error {
 	_, err := s.UserRepo.GetUserId(userIDToken.Token)
 	if err != nil {
+		reply = nil
 		return fmt.Errorf("user doesn't exist")
 	}
 	Videos, err := s.VideoRepo.GetVideoById(userIDToken.UserId)
@@ -99,6 +100,7 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 		fmt.Println("Error opening file:", err)
 		return err
 	}
+
 	// 设置上传到 OSS 的文件名
 	objectKey := file.FileName
 	fmt.Println("Final name: ", file.FileName)
