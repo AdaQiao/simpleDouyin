@@ -99,16 +99,6 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 		fmt.Println("Error opening file:", err)
 		return err
 	}
-	//defer file.Close()
-	defer func() {
-		fileToUpload.Close()
-		// 删除本地保存的视频文件
-		err := os.Remove(filePath)
-		if err != nil {
-			fmt.Println("Error deleting local file:", err)
-		}
-	}()
-
 	// 设置上传到 OSS 的文件名
 	objectKey := file.FileName
 	fmt.Println("Final name: ", file.FileName)

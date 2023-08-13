@@ -13,7 +13,7 @@ func FavoriteAction(c *gin.Context) {
 	if _, exist := UsersLoginInfo[token]; exist {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 0})
 	} else {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		c.JSON(http.StatusOK, model.Response{StatusCode: 0, StatusMsg: "User doesn't exist"})
 	}
 }
 
