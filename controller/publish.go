@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"net/rpc"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -43,6 +45,50 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
+
+	accessKeyID := "LTAI5t7jPFXhiXgckbXHeWeR"
+	accessKeySecret := "imAsfE1B4MF7VZTcgH6puYngVm0IwN"
+	endpoint := "YourEndpoint"
+	bucketName := "YourBucketName"
+
+	// 创建 OSS 客户端实例
+	client1, err := oss.New(endpoint, accessKeyID, accessKeySecret)
+	if err != nil {
+		fmt.Println("Error creating OSS client:", err)
+		return
+	}
+
+	// 获取存储空间（Bucket）实例
+	bucket, err := client1.Bucket(bucketName)
+	if err != nil {
+		fmt.Println("Error getting OSS bucket:", err)
+		return
+	}
+
+	// 要上传的文件路径
+	filePath := saveFile
+
+	// 打开要上传的文件
+	file, err := os.Open(filePath)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
+	// 设置上传到 OSS 的文件名
+	objectKey := "your-object-key.txt"
+
+	// 开始上传文件
+	err = bucket.PutObject(objectKey, file)
+	if err != nil {
+		fmt.Println("Error uploading file:", err)
+		return
+	}
+
+	// 获取存储的网址
+	objectURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
+	fmt.Println("Object URL:", objectURL)
 
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
