@@ -14,3 +14,7 @@ type UserIdToken struct {
 	UserId int64
 	Token  string
 }
+type FilenameAndFilepath struct {
+	FileName string
+	FilePath string
+}
