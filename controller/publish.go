@@ -48,8 +48,8 @@ func Publish(c *gin.Context) {
 
 	accessKeyID := "LTAI5t7jPFXhiXgckbXHeWeR"
 	accessKeySecret := "imAsfE1B4MF7VZTcgH6puYngVm0IwN"
-	endpoint := "YourEndpoint"
-	bucketName := "YourBucketName"
+	endpoint := "oss-cn-beijing.aliyuncs.com"
+	bucketName := "simple-douyin"
 
 	// 创建 OSS 客户端实例
 	client1, err := oss.New(endpoint, accessKeyID, accessKeySecret)
@@ -77,7 +77,7 @@ func Publish(c *gin.Context) {
 	defer file.Close()
 
 	// 设置上传到 OSS 的文件名
-	objectKey := "your-object-key.txt"
+	objectKey := finalName
 
 	// 开始上传文件
 	err = bucket.PutObject(objectKey, file)
@@ -98,7 +98,7 @@ func Publish(c *gin.Context) {
 	fmt.Println(saveFile)
 	// 调用远程注册方法
 	var reply model.Response
-	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: saveFile, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)
+	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: objectURL, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
