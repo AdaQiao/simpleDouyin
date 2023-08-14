@@ -113,7 +113,7 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	}
 
 	// 获取存储的网址
-	objectURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
+	objectURL := fmt.Sprintf("https://%s.%s/%s", bucketName, endpoint, objectKey)
 
 	*reply = model.CoverAndVideoURL{
 		CoverURL: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
