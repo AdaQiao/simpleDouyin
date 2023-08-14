@@ -2,10 +2,10 @@ package service
 
 import (
 	"fmt"
+	"github.com/3d0c/gmf"
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/disintegration/imaging"
 	"log"
 	"net"
 	"net/rpc"
@@ -120,31 +120,80 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	coverKey := strings.ReplaceAll(objectKey, ".mp4", "_cover.jpg")
 	videoPath := "public/" + objectKey
 	coverPath := "public/" + coverKey
-	// 打开视频文件
-	videofile, err := os.Open(videoPath)
-	if err != nil {
-		fmt.Println("无法打开视频文件:", err)
-		return err
-	}
-	defer videofile.Close()
 
-	// 截取封面图像
-	img, err := imaging.Decode(videofile)
+	// Open the video file and create an input context
+	inputCtx, err := gmf.NewInputCtx(videoPath)
 	if err != nil {
-		fmt.Println("无法解码视频文件:", err)
+		fmt.Println("Unable to open video file:", err)
+		return err
+	}
+	defer inputCtx.Free()
+
+	// Get the video stream index
+	videoStreamIndex := -1
+	for i, stream := range inputCtx.Streams() {
+		if stream.CodecCtx().CodecType() == gmf.AVMEDIA_TYPE_VIDEO {
+			videoStreamIndex = i
+			break
+		}
+	}
+	if videoStreamIndex == -1 {
+		fmt.Println("Video stream not found")
 		return err
 	}
 
-	// 保存封面图像
-	err = imaging.Save(img, coverPath)
+	// Get the video stream codec context
+	videoCodecCtx := inputCtx.Streams()[videoStreamIndex].CodecCtx()
+
+	// Find the timestamp for the cover image (here we use the first frame of the video)
+	coverTimestamp := int64(0)
+
+	// Convert the timestamp to the video stream time base
+	timeBase := inputCtx.Streams()[videoStreamIndex].TimeBase()
+
+	// Seek to the position of the cover image timestamp
+	err = inputCtx.SeekFrame(videoStreamIndex, coverTimestamp, gmf.AVSEEK_FLAG_BACKWARD)
 	if err != nil {
-		fmt.Println("无法保存封面图像:", err)
+		fmt.Println("Unable to seek to the position of the cover image timestamp:", err)
 		return err
 	}
-	fmt.Println("封面图像保存成功:", coverPath)
+
+	// Read the cover image frame
+	packet := gmf.NewPacket()
+	defer packet.Free()
+	for {
+		err := inputCtx.GetNextPacket(packet)
+		if err != nil {
+			break
+		}
+
+		if packet.StreamIndex() == videoStreamIndex {
+			frames, err := packet.Decode(videoCodecCtx)
+			if err != nil {
+				fmt.Println("Unable to decode frame:", err)
+				return err
+			}
+
+			for _, frame := range frames {
+				if frame.Pts() >= coverTimestamp {
+					// Save the frame data as an image file
+					err := frame.Save(coverPath, gmf.ImageJPEG)
+					if err != nil {
+						fmt.Println("Unable to save cover image:", err)
+						return err
+					}
+					break
+				}
+				frame.Free()
+			}
+		}
+	}
+
+	// Cover image saved successfully
+	fmt.Println("Cover image saved successfully")
 
 	// 打开要上传的文件
-	fileToUpload2, err := os.Open(filePath)
+	fileToUpload2, err := os.Open(coverPath)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return err
