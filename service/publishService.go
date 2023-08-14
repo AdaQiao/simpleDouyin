@@ -5,7 +5,7 @@ import (
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"gocv.io/x/gocv"
+	"github.com/disintegration/imaging"
 	"log"
 	"net"
 	"net/rpc"
@@ -121,28 +121,26 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	videoPath := "public/" + objectKey
 	coverPath := "public/" + coverKey
 	// 打开视频文件
-	video, err := gocv.VideoCaptureFile(videoPath)
+	videofile, err := os.Open(videoPath)
 	if err != nil {
 		fmt.Println("无法打开视频文件:", err)
 		return err
 	}
-	defer video.Close()
+	defer videofile.Close()
 
-	// 创建图像
-	frame := gocv.NewMat()
-
-	// 读取视频的第一帧图像
-	if ok := video.Read(&frame); !ok {
-		fmt.Println("无法读取视频帧")
+	// 截取封面图像
+	img, err := imaging.Decode(videofile)
+	if err != nil {
+		fmt.Println("无法解码视频文件:", err)
 		return err
 	}
 
 	// 保存封面图像
-	if ok := gocv.IMWrite(coverPath, frame); !ok {
-		fmt.Println("无法保存封面图像")
+	err = imaging.Save(img, coverPath)
+	if err != nil {
+		fmt.Println("无法保存封面图像:", err)
 		return err
 	}
-
 	fmt.Println("封面图像保存成功:", coverPath)
 
 	// 打开要上传的文件
@@ -152,14 +150,15 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 		return err
 	}
 
-	// 设置上传到 OSS 的文件名
-
 	// 开始上传文件
 	err = bucket.PutObject(coverKey, fileToUpload2)
 	if err != nil {
 		fmt.Println("Error uploading file:", err)
 		return err
 	}
+	defer func() {
+		os.Remove(coverPath)
+	}()
 
 	// 获取存储的网址
 	coverURL, err := bucket.SignURL(coverKey, oss.HTTPGet, 3600)
