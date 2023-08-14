@@ -162,7 +162,7 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	}
 
 	// 获取存储的网址
-	coverURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
+	coverURL, err := bucket.SignURL(coverKey, oss.HTTPGet, 3600)
 
 	*reply = model.CoverAndVideoURL{
 		CoverURL: coverURL,
