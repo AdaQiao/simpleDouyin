@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"gocv.io/x/gocv"
 	"log"
 	"net"
 	"net/rpc"
@@ -80,7 +79,6 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	accessKeySecret := "imAsfE1B4MF7VZTcgH6puYngVm0IwN"
 	endpoint := "oss-cn-beijing.aliyuncs.com"
 	bucketName := "simple-douyin"
-	regionID := "cn-beijing"
 	// 创建 OSS 客户端实例
 	client1, err := oss.New(endpoint, accessKeyID, accessKeySecret)
 	if err != nil {
@@ -119,37 +117,55 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	// 获取存储的网址
 	objectURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
 
-	client, err := sdk.NewClientWithAccessKey(regionID, accessKeyID, accessKeySecret)
+	coverKey := strings.ReplaceAll(objectKey, ".mp4", "_cover.jpg")
+	videoPath := "public/" + objectKey
+	coverPath := "public/" + coverKey
+	// 打开视频文件
+	video, err := gocv.VideoCaptureFile(videoPath)
 	if err != nil {
-		fmt.Println("Error creating Aliyun client:", err)
+		fmt.Println("无法打开视频文件:", err)
+		return err
+	}
+	defer video.Close()
+
+	// 创建图像
+	frame := gocv.NewMat()
+
+	// 读取视频的第一帧图像
+	if ok := video.Read(&frame); !ok {
+		fmt.Println("无法读取视频帧")
 		return err
 	}
 
-	// 截取封面
-	coverRequest := requests.NewCommonRequest()
-	coverRequest.Method = "POST"
-	coverRequest.Domain = "mps.aliyuncs.com"
-	coverRequest.Version = "2014-06-18"
-	coverRequest.ApiName = "SubmitSnapshotJob"
-
-	coverRequest.QueryParams["RegionId"] = regionID
-	coverRequest.QueryParams["Input"] = "simple-douyin/" + objectKey
-	coverRequest.QueryParams["SnapshotConfig"] = "snapshotConfig"
-	coverRequest.QueryParams["OutputBucket"] = bucketName
-	coverRequest.QueryParams["OutputLocation"] = "oss-cn-" + regionID
-	coverImagePath := "simple-douyin/" + strings.Replace(objectKey, ".mp4", "_cover.jpg", 1)
-	coverRequest.QueryParams["OutputObject"] = coverImagePath
-
-	coverResponse, err := client.ProcessCommonRequest(coverRequest)
-	if err != nil {
-		fmt.Println("Error submitting snapshot job:", err)
+	// 保存封面图像
+	if ok := gocv.IMWrite(coverPath, frame); !ok {
+		fmt.Println("无法保存封面图像")
 		return err
 	}
-	fmt.Println("Response:", coverResponse.GetHttpContentString())
-	coverImageURL := fmt.Sprintf("https://%s.%s.aliyuncs.com/%s", bucketName, regionID, coverImagePath)
+
+	fmt.Println("封面图像保存成功:", coverPath)
+
+	// 打开要上传的文件
+	fileToUpload2, err := os.Open(filePath)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return err
+	}
+
+	// 设置上传到 OSS 的文件名
+
+	// 开始上传文件
+	err = bucket.PutObject(coverKey, fileToUpload2)
+	if err != nil {
+		fmt.Println("Error uploading file:", err)
+		return err
+	}
+
+	// 获取存储的网址
+	coverURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
 
 	*reply = model.CoverAndVideoURL{
-		CoverURL: coverImageURL,
+		CoverURL: coverURL,
 		VideoURL: objectURL,
 	}
 	return nil
