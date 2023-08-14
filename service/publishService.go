@@ -116,7 +116,7 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	objectURL := fmt.Sprintf("https://%s.%s/%s", bucketName, endpoint, objectKey)
 
 	*reply = model.CoverAndVideoURL{
-		CoverURL: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
+		CoverURL: "https://simple-douyin.oss-cn-beijing.aliyuncs.com/douyin.png",
 		VideoURL: objectURL,
 	}
 	return nil

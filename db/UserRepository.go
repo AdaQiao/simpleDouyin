@@ -24,12 +24,12 @@ func NewMySQLUserRepository() *MySQLUserRepository {
 func (repo *MySQLUserRepository) CreateUser(user model.UserPassword) error {
 	// 执行插入用户数据的SQL语句
 	query := `
-		INSERT INTO users (token, name, is_follow, follow_count, follower_count, total_favorited, work_count, favorite_count)
+		INSERT INTO users (token, name, is_follow, follow_count, follower_count, total_favorited, work_count, favorite_count, avatar)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	// 执行插入操作
 	token := user.Username + user.Password
-	_, err := dB.Exec(query, token, user.Username, 0, 0, 0, 0, 0, 0)
+	_, err := dB.Exec(query, token, user.Username, 0, 0, 0, 0, 0, 0, "https://simple-douyin.oss-cn-beijing.aliyuncs.com/douyin.png")
 	if err != nil {
 		log.Println("插入用户数据失败:", err)
 		return err
