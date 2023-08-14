@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/3d0c/gmf"
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
@@ -10,7 +9,6 @@ import (
 	"net"
 	"net/rpc"
 	"os"
-	"strings"
 )
 
 type PublishService interface {
@@ -117,103 +115,8 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	// 获取存储的网址
 	objectURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
 
-	coverKey := strings.ReplaceAll(objectKey, ".mp4", "_cover.jpg")
-	videoPath := "public/" + objectKey
-	coverPath := "public/" + coverKey
-
-	// Open the video file and create an input context
-	inputCtx, err := gmf.NewInputCtx(videoPath)
-	if err != nil {
-		fmt.Println("Unable to open video file:", err)
-		return err
-	}
-	defer inputCtx.Free()
-
-	// Get the video stream index
-	videoStreamIndex := -1
-	for i, stream := range inputCtx.Streams() {
-		if stream.CodecCtx().CodecType() == gmf.AVMEDIA_TYPE_VIDEO {
-			videoStreamIndex = i
-			break
-		}
-	}
-	if videoStreamIndex == -1 {
-		fmt.Println("Video stream not found")
-		return err
-	}
-
-	// Get the video stream codec context
-	videoCodecCtx := inputCtx.Streams()[videoStreamIndex].CodecCtx()
-
-	// Find the timestamp for the cover image (here we use the first frame of the video)
-	coverTimestamp := int64(0)
-
-	// Convert the timestamp to the video stream time base
-	timeBase := inputCtx.Streams()[videoStreamIndex].TimeBase()
-
-	// Seek to the position of the cover image timestamp
-	err = inputCtx.SeekFrame(videoStreamIndex, coverTimestamp, gmf.AVSEEK_FLAG_BACKWARD)
-	if err != nil {
-		fmt.Println("Unable to seek to the position of the cover image timestamp:", err)
-		return err
-	}
-
-	// Read the cover image frame
-	packet := gmf.NewPacket()
-	defer packet.Free()
-	for {
-		err := inputCtx.GetNextPacket(packet)
-		if err != nil {
-			break
-		}
-
-		if packet.StreamIndex() == videoStreamIndex {
-			frames, err := packet.Decode(videoCodecCtx)
-			if err != nil {
-				fmt.Println("Unable to decode frame:", err)
-				return err
-			}
-
-			for _, frame := range frames {
-				if frame.Pts() >= coverTimestamp {
-					// Save the frame data as an image file
-					err := frame.Save(coverPath, gmf.ImageJPEG)
-					if err != nil {
-						fmt.Println("Unable to save cover image:", err)
-						return err
-					}
-					break
-				}
-				frame.Free()
-			}
-		}
-	}
-
-	// Cover image saved successfully
-	fmt.Println("Cover image saved successfully")
-
-	// 打开要上传的文件
-	fileToUpload2, err := os.Open(coverPath)
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return err
-	}
-
-	// 开始上传文件
-	err = bucket.PutObject(coverKey, fileToUpload2)
-	if err != nil {
-		fmt.Println("Error uploading file:", err)
-		return err
-	}
-	defer func() {
-		os.Remove(coverPath)
-	}()
-
-	// 获取存储的网址
-	coverURL, err := bucket.SignURL(coverKey, oss.HTTPGet, 3600)
-
 	*reply = model.CoverAndVideoURL{
-		CoverURL: coverURL,
+		CoverURL: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
 		VideoURL: objectURL,
 	}
 	return nil
