@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"log"
 	"net"
 	"net/rpc"
 	"os"
+	"strings"
 )
 
 type PublishService interface {
@@ -77,7 +80,7 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	accessKeySecret := "imAsfE1B4MF7VZTcgH6puYngVm0IwN"
 	endpoint := "oss-cn-beijing.aliyuncs.com"
 	bucketName := "simple-douyin"
-
+	regionID := "cn-beijing"
 	// 创建 OSS 客户端实例
 	client1, err := oss.New(endpoint, accessKeyID, accessKeySecret)
 	if err != nil {
@@ -116,44 +119,37 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	// 获取存储的网址
 	objectURL, err := bucket.SignURL(objectKey, oss.HTTPGet, 3600)
 
-	//// 获取视频封面并保存为临时文件
-	//tempCoverFileName := "cover.jpg"
-	//tempCoverFilePath := filepath.Join("./public/", tempCoverFileName)
-	//ffmpegCmd := exec.Command("ffmpeg", "-ss", "00:00:00.5", "-i", filePath, "-vframes", "1", tempCoverFilePath)
-	//err = ffmpegCmd.Run()
-	//if err != nil {
-	//	fmt.Println("Error extracting video cover:", err)
-	//	return err
-	//}
-	//defer os.Remove(tempCoverFilePath)
-	//
-	//// 打开视频封面文件
-	//coverFile, err := os.Open(tempCoverFilePath)
-	//if err != nil {
-	//	fmt.Println("Error opening cover file:", err)
-	//	return err
-	//}
-	//defer coverFile.Close()
-	//
-	//// 设置上传到 OSS 的封面文件名
-	//coverObjectKey := "cover.jpg"
-	//fmt.Println("Cover file name: ", coverObjectKey)
-	//
-	//// 开始上传封面文件
-	//err = bucket.PutObject(coverObjectKey, coverFile)
-	//if err != nil {
-	//	fmt.Println("Error uploading cover file:", err)
-	//	return err
-	//}
-	//
-	//// 获取存储的封面网址
-	//coverURL, err := bucket.SignURL(coverObjectKey, oss.HTTPGet, 3600)
-	//if err != nil {
-	//	fmt.Println("Error getting cover URL:", err)
-	//	return err
-	//}
+	client, err := sdk.NewClientWithAccessKey(regionID, accessKeyID, accessKeySecret)
+	if err != nil {
+		fmt.Println("Error creating Aliyun client:", err)
+		return err
+	}
+
+	// 截取封面
+	coverRequest := requests.NewCommonRequest()
+	coverRequest.Method = "POST"
+	coverRequest.Domain = "mps.aliyuncs.com"
+	coverRequest.Version = "2014-06-18"
+	coverRequest.ApiName = "SubmitSnapshotJob"
+
+	coverRequest.QueryParams["RegionId"] = regionID
+	coverRequest.QueryParams["Input"] = "simple-douyin/" + objectKey
+	coverRequest.QueryParams["SnapshotConfig"] = "snapshotConfig"
+	coverRequest.QueryParams["OutputBucket"] = bucketName
+	coverRequest.QueryParams["OutputLocation"] = "oss-cn-" + regionID
+	coverImagePath := "simple-douyin/" + strings.Replace(objectKey, ".mp4", "_cover.jpg", 1)
+	coverRequest.QueryParams["OutputObject"] = coverImagePath
+
+	coverResponse, err := client.ProcessCommonRequest(coverRequest)
+	if err != nil {
+		fmt.Println("Error submitting snapshot job:", err)
+		return err
+	}
+	fmt.Println("Response:", coverResponse.GetHttpContentString())
+	coverImageURL := fmt.Sprintf("https://%s.%s.aliyuncs.com/%s", bucketName, regionID, coverImagePath)
+
 	*reply = model.CoverAndVideoURL{
-		CoverURL: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
+		CoverURL: coverImageURL,
 		VideoURL: objectURL,
 	}
 	return nil
