@@ -49,14 +49,14 @@ func Publish(c *gin.Context) {
 	if err != nil {
 		log.Println("RPC连接失败：", err)
 	}
-	var finalURL string
+	var finalURL model.CoverAndVideoURL
 	err = client.Call("PublishServiceImpl.UploadVideoToOSS", model.FilenameAndFilepath{FileName: finalName, FilePath: saveFile}, &finalURL)
 	if err != nil {
 		log.Println("调用远程注册方法失败：", err)
 	}
 
 	var reply model.Response
-	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: finalURL, CoverUrl: "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg"}, &reply)
+	err = client.Call("PublishServiceImpl.Publish", model.UploadViewReq{Title: title, Token: token, ViewUrl: finalURL.VideoURL, CoverUrl: finalURL.CoverURL}, &reply)
 	if err != nil {
 		log.Println("调用远程注册方法失败：", err)
 	}

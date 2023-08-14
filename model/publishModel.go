@@ -18,3 +18,7 @@ type FilenameAndFilepath struct {
 	FileName string
 	FilePath string
 }
+type CoverAndVideoURL struct {
+	CoverURL string
+	VideoURL string
+}
