@@ -11,6 +11,7 @@ type UserRepository interface {
 	CreateUser(user model.UserPassword) error
 	GetUser(token string) (*model.User, error)
 	GetUserId(token string) (int64, error)
+	UpdateWorkCount(token string) error
 }
 
 type MySQLUserRepository struct {
@@ -23,12 +24,12 @@ func NewMySQLUserRepository() *MySQLUserRepository {
 func (repo *MySQLUserRepository) CreateUser(user model.UserPassword) error {
 	// 执行插入用户数据的SQL语句
 	query := `
-		INSERT INTO users (token, name, is_follow,follow_count, follower_count)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO users (token, name, is_follow, follow_count, follower_count, total_favorited, work_count, favorite_count)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	// 执行插入操作
 	token := user.Username + user.Password
-	_, err := dB.Exec(query, token, user.Username, 0, 0, 0)
+	_, err := dB.Exec(query, token, user.Username, 0, 0, 0, 0, 0, 0)
 	if err != nil {
 		log.Println("插入用户数据失败:", err)
 		return err
@@ -73,4 +74,22 @@ func (repo *MySQLUserRepository) GetUserId(token string) (int64, error) {
 		return -1, err
 	}
 	return userId, nil
+}
+
+func (repo *MySQLUserRepository) UpdateWorkCount(token string) error {
+	// 获取用户信息
+	query := "SELECT work_count FROM users WHERE token = ?"
+	row := dB.QueryRow(query, token)
+	var workCount int64
+	err := row.Scan(&workCount)
+	// 更新 work_count
+	workCount++
+	query = "UPDATE users SET work_count = ? WHERE token = ?"
+	_, err = dB.Exec(query, workCount, token)
+	if err != nil {
+		log.Println("更新用户 work_count 失败:", err)
+		return err
+	}
+
+	return nil
 }
