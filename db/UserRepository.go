@@ -40,11 +40,11 @@ func (repo *MySQLUserRepository) CreateUser(user model.UserPassword) error {
 
 func (repo *MySQLUserRepository) GetUser(token string) (*model.User, error) {
 	// 执行查询用户数据的SQL语句
-	query := "SELECT id, name, follow_count, follower_count, is_follow FROM users WHERE token = ?"
+	query := "SELECT id, name, follow_count, follower_count, is_follow ,total_favorited, work_count, favorite_count FROM users WHERE token = ?"
 	row := dB.QueryRow(query, token)
 
 	user := &model.User{}
-	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow)
+	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow, &user.TotalFavorited, &user.WorkCount, &user.FavoriteCount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// 用户不存在
