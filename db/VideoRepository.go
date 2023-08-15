@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -119,6 +120,7 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 			return nil, 0, err
 		}
 		videos = append(videos, video)
+		fmt.Println(tempTime)
 		// 保存第一个视频的created_time
 	}
 	firstTime = tempTime
