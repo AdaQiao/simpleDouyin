@@ -13,6 +13,8 @@ var VideoRepo *db.MySQLVideoRepository
 
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
+	lastestTime := c.Query("latest_time")
+	fmt.Println(lastestTime)
 	VideoRepo = db.NewMySQLVideoRepository()
 	videos, nextTime, _ := VideoRepo.GetVideosByTimestamp(time.Now())
 	fmt.Println(len(videos))
