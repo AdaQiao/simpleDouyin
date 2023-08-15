@@ -92,7 +92,7 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 		ORDER BY created_time DESC
 		LIMIT 30
 	`
-	rows, err := dB.Query(query, timestamp)
+	rows, err := dB.Query(query, timestamp.Unix())
 	if err != nil {
 		log.Println("查询视频失败:", err)
 		return nil, 0, err
