@@ -21,6 +21,7 @@ func Feed(c *gin.Context) {
 		curTime = time.Now().Unix()
 	}
 	fmt.Println("curTime:", curTime)
+	fmt.Println("now:", time.Now().Unix())
 	videos, nextTime, _ := VideoRepo.GetVideosByTimestamp(curTime)
 	c.JSON(http.StatusOK, model.FeedResponse{
 		Response:  model.Response{StatusCode: 0},
