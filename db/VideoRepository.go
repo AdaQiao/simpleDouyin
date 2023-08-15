@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -120,10 +119,12 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 			return nil, 0, err
 		}
 		videos = append(videos, video)
-		fmt.Println(tempTime)
+		if len(videos) == 1 {
+			firstTime = tempTime
+		}
 		// 保存第一个视频的created_time
 	}
-	firstTime = tempTime
+
 	if err := rows.Err(); err != nil {
 		log.Println("遍历视频结果失败:", err)
 		return nil, 0, err
