@@ -28,11 +28,11 @@ func (repo *MySQLVideoRepository) CreateVideo(video model.Video, token string) e
 
 	// 执行插入视频数据的SQL语句
 	query := `
-		INSERT INTO videos (token, author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO videos (token, author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title, created_time)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	// 执行插入操作
-	_, err := dB.Exec(query, token, video.Author.Id, video.PlayUrl, video.CoverUrl, 0, 0, 0, video.Title)
+	_, err := dB.Exec(query, token, video.Author.Id, video.PlayUrl, video.CoverUrl, 0, 0, 0, video.Title, time.Now().Unix())
 	if err != nil {
 		log.Println("插入视频数据失败:", err)
 		return err
