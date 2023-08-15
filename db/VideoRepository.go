@@ -90,7 +90,7 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 		FROM videos
 		WHERE created_time < ? 
 		ORDER BY created_time DESC
-		LIMIT 30
+		LIMIT 1
 	`
 	rows, err := dB.Query(query, timestamp)
 	if err != nil {
