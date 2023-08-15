@@ -71,7 +71,7 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 			return nil, err
 		}
 		videos = append(videos, video)
-		fmt.Println(video.PlayUrl)
+
 	}
 
 	if err := rows.Err(); err != nil {
@@ -120,6 +120,7 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 			return nil, 0, err
 		}
 		videos = append(videos, video)
+		fmt.Println(video.PlayUrl)
 		// 保存第一个视频的created_time
 	}
 	firstTime = tempTime
