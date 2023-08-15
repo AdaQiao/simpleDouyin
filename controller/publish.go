@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/rpc"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -43,6 +44,13 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
+
+	// 删除本地文件
+	defer func() {
+		if err := os.Remove(saveFile); err != nil {
+			log.Println("删除本地文件失败：", err)
+		}
+	}()
 
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9092")
