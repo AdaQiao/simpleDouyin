@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 var VideoRepo *db.MySQLVideoRepository
@@ -15,7 +16,10 @@ var VideoRepo *db.MySQLVideoRepository
 func Feed(c *gin.Context) {
 	lastestTime := c.Query("latest_time")
 	VideoRepo = db.NewMySQLVideoRepository()
-	curTime, _ := strconv.ParseInt(lastestTime, 10, 64)
+	curTime, err := strconv.ParseInt(lastestTime, 10, 64)
+	if err != nil || curTime == int64(0) {
+		curTime = time.Now().Unix()
+	}
 	fmt.Println("curTime:", curTime)
 	videos, nextTime, _ := VideoRepo.GetVideosByTimestamp(curTime)
 	c.JSON(http.StatusOK, model.FeedResponse{
