@@ -89,8 +89,8 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 	query := `
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title, created_time
 		FROM videos
-		WHERE timestamp <= ? 
-		ORDER BY timestamp DESC
+		WHERE created_time <= ? 
+		ORDER BY created_time DESC
 		LIMIT 30
 	`
 	rows, err := dB.Query(query, timestamp)
