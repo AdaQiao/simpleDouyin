@@ -90,7 +90,7 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title, created_time
 		FROM videos
 		WHERE timestamp <= ? 
-		ORDER BY timestamp DESC
+		ORDER BY timestamp
 		LIMIT 30
 	`
 	rows, err := dB.Query(query, timestamp)
@@ -121,11 +121,8 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 		}
 		videos = append(videos, video)
 		// 保存第一个视频的created_time
-		if len(videos) == 1 {
-			firstTime = tempTime
-		}
 	}
-
+	firstTime = tempTime
 	if err := rows.Err(); err != nil {
 		log.Println("遍历视频结果失败:", err)
 		return nil, 0, err
