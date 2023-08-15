@@ -13,6 +13,7 @@ func main() {
 		log.Fatal("初始化数据库连接失败:", err)
 	}
 	defer db.CloseDB()
+	go service.RunFeedServer()
 	go service.RunPublishServer()
 	go service.RunMessageServer()
 	go service.RunUserServer()

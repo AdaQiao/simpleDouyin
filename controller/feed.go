@@ -1,43 +1,26 @@
 package controller
 
 import (
-	"fmt"
-	"github.com/AdaQiao/simpleDouyin/db"
 	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
-	"strconv"
-	"time"
+	"net/rpc"
 )
-
-var VideoRepo *db.MySQLVideoRepository
-
-func GetVideoList(curTime int64) ([]model.Video, int64, error) {
-	VideoRepo := db.NewMySQLVideoRepository()
-	UserRepo := db.NewMySQLUserRepository()
-	videos, nextTime, tokens, err := VideoRepo.GetVideosByTimestamp(curTime)
-	if err != nil {
-		return nil, 0, err
-	}
-	for i := 0; i < len(videos); i++ {
-		user, _ := UserRepo.GetUser(tokens[i])
-		videos[i].Author = *user
-	}
-	return videos, nextTime, nil
-}
 
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	lastestTime := c.Query("latest_time")
-	curTime, err := strconv.ParseInt(lastestTime, 10, 64)
-	if err != nil || curTime == int64(0) {
-		curTime = time.Now().Unix()
+	// 连接到远程RPC服务器
+	client, err := rpc.Dial("tcp", "127.0.0.1:9093")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
 	}
-	fmt.Println("curTime:", curTime)
-	videos, nextTime, _ := GetVideoList(curTime)
-	c.JSON(http.StatusOK, model.FeedResponse{
-		Response:  model.Response{StatusCode: 0},
-		VideoList: videos,
-		NextTime:  nextTime,
-	})
+	// 调用远程登录方法
+	var reply model.FeedResponse
+	err = client.Call("FeedServiceImpl.GetVideoList", lastestTime, &reply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
 }
