@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/RaymondCode/simple-demo/model"
+	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

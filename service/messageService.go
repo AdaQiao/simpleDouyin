@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/RaymondCode/simple-demo/model"
+	"github.com/AdaQiao/simpleDouyin/model"
 
 	"io"
 	"net"

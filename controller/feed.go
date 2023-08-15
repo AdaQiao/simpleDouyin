@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/RaymondCode/simple-demo/db"
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/gin-gonic/gin"
@@ -19,10 +20,11 @@ type FeedResponse struct {
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	VideoRepo = db.NewMySQLVideoRepository()
-	viseos, _ := VideoRepo.GetVideoById(3)
+	videos, _ := VideoRepo.GetVideoById(3)
+	fmt.Println(len(videos))
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  model.Response{StatusCode: 0},
-		VideoList: viseos,
+		VideoList: videos,
 		NextTime:  time.Now().Unix(),
 	})
 }

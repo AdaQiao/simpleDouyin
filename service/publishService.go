@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/RaymondCode/simple-demo/db"
-	"github.com/RaymondCode/simple-demo/model"
+	"github.com/AdaQiao/simpleDouyin/db"
+	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"log"
 	"net"

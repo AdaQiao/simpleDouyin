@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"github.com/RaymondCode/simple-demo/model"
+	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

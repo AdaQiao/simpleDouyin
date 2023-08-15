@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	_ "fmt"
-	"github.com/RaymondCode/simple-demo/model"
+	"github.com/AdaQiao/simpleDouyin/model"
 	"log"
 )
 
