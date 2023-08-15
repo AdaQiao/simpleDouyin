@@ -2,9 +2,11 @@ package db
 
 import (
 	"fmt"
-	_ "fmt"
-	"github.com/AdaQiao/simpleDouyin/model"
 	"log"
+	"sync"
+	"time"
+
+	"github.com/AdaQiao/simpleDouyin/model"
 )
 
 type VideoRepository interface {
@@ -13,6 +15,7 @@ type VideoRepository interface {
 }
 
 type MySQLVideoRepository struct {
+	mutex sync.Mutex
 }
 
 func NewMySQLVideoRepository() *MySQLVideoRepository {
@@ -20,6 +23,9 @@ func NewMySQLVideoRepository() *MySQLVideoRepository {
 }
 
 func (repo *MySQLVideoRepository) CreateVideo(video model.Video, token string) error {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
 	// 执行插入视频数据的SQL语句
 	query := `
 		INSERT INTO videos (token, author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title)
@@ -36,6 +42,9 @@ func (repo *MySQLVideoRepository) CreateVideo(video model.Video, token string) e
 }
 
 func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
 	// 执行查询视频数据的SQL语句
 	query := `
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title FROM videos WHERE  author_id = ?
@@ -63,6 +72,51 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 		}
 		videos = append(videos, video)
 		fmt.Println(video.PlayUrl)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println("遍历视频结果失败:", err)
+		return nil, err
+	}
+	return videos, nil
+}
+
+func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]model.Video, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	// 执行查询视频数据的SQL语句
+	query := `
+		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title
+		FROM videos
+		WHERE timestamp <= ? 
+		ORDER BY timestamp DESC
+		LIMIT 30
+	`
+	rows, err := dB.Query(query, timestamp)
+	if err != nil {
+		log.Println("查询视频失败:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var videos []model.Video
+	for rows.Next() {
+		var video model.Video
+		err := rows.Scan(
+			&video.Author.Id,
+			&video.PlayUrl,
+			&video.CoverUrl,
+			&video.FavoriteCount,
+			&video.CommentCount,
+			&video.IsFavorite,
+			&video.Title,
+		)
+		if err != nil {
+			log.Println("扫描视频数据失败:", err)
+			return nil, err
+		}
+		videos = append(videos, video)
 	}
 
 	if err := rows.Err(); err != nil {

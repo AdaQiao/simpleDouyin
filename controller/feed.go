@@ -11,18 +11,12 @@ import (
 
 var VideoRepo *db.MySQLVideoRepository
 
-type FeedResponse struct {
-	model.Response
-	VideoList []model.Video `json:"video_list,omitempty"`
-	NextTime  int64         `json:"next_time,omitempty"`
-}
-
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	VideoRepo = db.NewMySQLVideoRepository()
-	videos, _ := VideoRepo.GetVideoById(3)
+	videos, _ := VideoRepo.GetVideosByTimestamp(time.Now())
 	fmt.Println(len(videos))
-	c.JSON(http.StatusOK, FeedResponse{
+	c.JSON(http.StatusOK, model.FeedResponse{
 		Response:  model.Response{StatusCode: 0},
 		VideoList: videos,
 		NextTime:  time.Now().Unix(),
