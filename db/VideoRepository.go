@@ -80,13 +80,13 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 	return videos, nil
 }
 
-func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, error) {
+func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, []string, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 
 	// 执行查询视频数据的SQL语句
 	query := `
-		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title, created_time
+		SELECT id, token, play_url, cover_url, favorite_count, comment_count, is_favorite, title, created_time
 		FROM videos
 		WHERE created_time < ? 
 		ORDER BY created_time DESC
@@ -95,18 +95,20 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 	rows, err := dB.Query(query, timestamp)
 	if err != nil {
 		log.Println("查询视频失败:", err)
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 	defer rows.Close()
 
 	var videos []model.Video
+	var tokens []string
 	var tempTime int64
 	var firstTime int64
+	var token string
 	for rows.Next() {
 		var video model.Video
 		err := rows.Scan(
 			&video.Id,
-			&video.Author,
+			&token,
 			&video.PlayUrl,
 			&video.CoverUrl,
 			&video.FavoriteCount,
@@ -117,9 +119,10 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 		)
 		if err != nil {
 			log.Println("扫描视频数据失败:", err)
-			return nil, 0, err
+			return nil, 0, nil, err
 		}
 		videos = append(videos, video)
+		tokens = append(tokens, token)
 		if len(videos) == 1 {
 			firstTime = tempTime
 		}
@@ -128,7 +131,7 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 
 	if err := rows.Err(); err != nil {
 		log.Println("遍历视频结果失败:", err)
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
-	return videos, firstTime, nil
+	return videos, firstTime, tokens, nil
 }
