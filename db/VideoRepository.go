@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -12,6 +11,7 @@ import (
 type VideoRepository interface {
 	CreateVideo(video model.Video, token string) error
 	GetVideoById(userId int64) ([]model.Video, error)
+	GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, error)
 }
 
 type MySQLVideoRepository struct {
@@ -80,7 +80,7 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 	return videos, nil
 }
 
-func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]model.Video, int64, error) {
+func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 
@@ -88,11 +88,11 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 	query := `
 		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title, created_time
 		FROM videos
-		WHERE created_time <= ? 
+		WHERE created_time < ? 
 		ORDER BY created_time DESC
 		LIMIT 30
 	`
-	rows, err := dB.Query(query, timestamp.Unix())
+	rows, err := dB.Query(query, timestamp)
 	if err != nil {
 		log.Println("查询视频失败:", err)
 		return nil, 0, err
@@ -119,7 +119,6 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp time.Time) ([]m
 			return nil, 0, err
 		}
 		videos = append(videos, video)
-		fmt.Println(video.PlayUrl + "sfadafafafasdfasf")
 		// 保存第一个视频的created_time
 	}
 	firstTime = tempTime

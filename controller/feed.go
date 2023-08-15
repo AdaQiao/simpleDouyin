@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/AdaQiao/simpleDouyin/db"
 	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
+	"strconv"
 )
 
 var VideoRepo *db.MySQLVideoRepository
@@ -14,10 +13,9 @@ var VideoRepo *db.MySQLVideoRepository
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	lastestTime := c.Query("latest_time")
-	fmt.Println(lastestTime)
 	VideoRepo = db.NewMySQLVideoRepository()
-	videos, nextTime, _ := VideoRepo.GetVideosByTimestamp(time.Now())
-	fmt.Println(len(videos))
+	curTime, _ := strconv.ParseInt(lastestTime, 10, 64)
+	videos, nextTime, _ := VideoRepo.GetVideosByTimestamp(curTime)
 	c.JSON(http.StatusOK, model.FeedResponse{
 		Response:  model.Response{StatusCode: 0},
 		VideoList: videos,
