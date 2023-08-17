@@ -25,7 +25,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 			StatusCode: 1,
 			StatusMsg:  "user didn't uphhhhhhloaded",
 		}
-		return fmt.Errorf("user didn't uploaded")
+		return fmt.Errorf("user didn'gffgsfgfsgsdfgt uploaded")
 	}
 	video, err := s.VideoRepo.GetVideoByVideoId(req.VideoId)
 
