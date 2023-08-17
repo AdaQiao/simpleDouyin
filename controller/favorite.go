@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -19,6 +20,8 @@ func FavoriteAction(c *gin.Context) {
 		action_type = 2
 	}
 	token := c.PostForm("token")
+	fmt.Println(token)
+	fmt.Println(action_type)
 	mes := model.FavoriteMessage{
 		VideoId:    videoId,
 		Token:      token,
