@@ -12,7 +12,7 @@ import (
 type VideoRepository interface {
 	CreateVideo(video model.Video, token string) error
 	GetVideoById(userId int64) ([]model.Video, error)
-	GetVideoByVideoId(videoId int64) (model.Video, error)
+	GetVideoByVideoId(videoId int64) (*model.Video, error)
 	GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, []string, error)
 	GetAuthorIdByVideoId(videoId int64) (int64, error)
 	UpdateFavoriteCount(videoId int64, mode int32) error
@@ -85,7 +85,7 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 	return videos, nil
 }
 
-func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (model.Video, error) {
+func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (*model.Video, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 
@@ -97,7 +97,7 @@ func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (model.Video,
 	rows, err := dB.Query(query, videoId)
 	if err != nil {
 		log.Println("查询视频失败:", err)
-		return video, err
+		return nil, err
 	}
 
 	err = rows.Scan(
@@ -110,8 +110,9 @@ func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (model.Video,
 		&video.IsFavorite,
 		&video.Title,
 	)
-	return video, nil
+	return &video, nil
 }
+
 func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, []string, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()

@@ -104,9 +104,8 @@ func (s *FavoriteServiceImpl) FavoriteList(userIDToken model.UserIdToken, reply 
 	}
 	Videos := make([]model.Video, len(VideoIds))
 	for i := 0; i < len(VideoIds); i++ {
-		fmt.Println("videoId :", VideoIds[i])
-		Videos[i], err = s.VideoRepo.GetVideoByVideoId(VideoIds[i])
-		fmt.Println("video.cover_url:", Videos[i].CoverUrl)
+		video, err := s.VideoRepo.GetVideoByVideoId(VideoIds[i])
+		Videos[i] = *video
 		if err != nil {
 			*reply = model.VideoListResponse{
 				Response: model.Response{
