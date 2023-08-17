@@ -96,7 +96,7 @@ func (s *FavoriteServiceImpl) FavoriteList(userIDToken model.UserIdToken, reply 
 	if err != nil {
 		*reply = model.VideoListResponse{
 			Response: model.Response{
-				StatusCode: 1,
+				StatusCode: 0,
 			},
 			VideoList: nil,
 		}
@@ -108,7 +108,7 @@ func (s *FavoriteServiceImpl) FavoriteList(userIDToken model.UserIdToken, reply 
 		if err != nil {
 			*reply = model.VideoListResponse{
 				Response: model.Response{
-					StatusCode: 1,
+					StatusCode: 0,
 				},
 				VideoList: nil,
 			}
