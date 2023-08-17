@@ -37,12 +37,12 @@ func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.F
 	}
 	//如果用户已登录，查询点赞状态
 	if feedReq.Token != "" {
+		fmt.Println("feedReq.Token : ", feedReq.Token)
+		userId, err := s.UserRepo.GetUserId(feedReq.Token)
+		if err != nil {
+			fmt.Println("查询用户id失败:", err)
+		}
 		for i := 0; i < len(videos); i++ {
-			fmt.Println("feedReq.Token : ", feedReq.Token)
-			userId, err := s.UserRepo.GetUserId(feedReq.Token)
-			if err != nil {
-				fmt.Println("查询用户id失败:", err)
-			}
 			isLike, err := s.FavoriteRepo.CheckFavorite(userId, videos[i].Id)
 			if err != nil {
 				fmt.Println("查询是否点赞失败:", err)
