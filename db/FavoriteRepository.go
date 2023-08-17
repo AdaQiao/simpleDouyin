@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"sync"
 )
@@ -24,10 +25,11 @@ func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int64) error {
 	defer repo.mutex.Unlock()
 
 	// 检查是否已存在相同的记录
-	query := "SELECT id FROM favorite WHERE user_id = ? AND video_id = ?"
+	query := "SELECT id, is_favorite FROM favorite WHERE user_id = ? AND video_id = ?"
 	row := dB.QueryRow(query, userID, videoID)
-	var id int
-	err := row.Scan(&id)
+	var id int64
+	var isFavorite int
+	err := row.Scan(&id, &isFavorite)
 	if err == sql.ErrNoRows {
 		// 不存在记录，插入新记录
 		query = "INSERT INTO favorite (user_id, video_id, is_favorite) VALUES (?, ?, 1)"
@@ -40,7 +42,10 @@ func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int64) error {
 		log.Println("查询喜欢记录失败:", err)
 		return err
 	} else {
-		// 已存在记录，更新is_favorite为1
+		if isFavorite == 1 {
+			return errors.New("已点赞")
+		}
+		// 已取消点赞，更新 is_favorite 为 1
 		query = "UPDATE favorite SET is_favorite = 1 WHERE id = ?"
 		_, err = dB.Exec(query, id)
 		if err != nil {
