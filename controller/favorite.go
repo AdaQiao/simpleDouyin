@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -12,16 +11,14 @@ import (
 
 // FavoriteAction no practical effect, just check if token is valid
 func FavoriteAction(c *gin.Context) {
-	videoId, err := strconv.ParseInt(c.PostForm("video_id"), 10, 64)
+	videoId, err := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	var action_type int32
-	if c.PostForm("action_type") == "1" {
+	if c.Query("action_type") == "1" {
 		action_type = 1
 	} else {
 		action_type = 2
 	}
 	token := c.Query("token")
-	fmt.Println(token)
-	fmt.Println(action_type)
 	mes := model.FavoriteMessage{
 		VideoId:    videoId,
 		Token:      token,
