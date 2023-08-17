@@ -22,37 +22,19 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	userId, err := s.UserRepo.GetUserId(req.Token)
 	if err != nil {
 		*reply = model.Response{
-			StatusCode: 1,
+			StatusCode: 0,
 			StatusMsg:  "user didn't uphhhhhhloaded",
 		}
 		return fmt.Errorf("user didn'gffgsfgfsgsdfgt uploaded")
 	}
 	video, err := s.VideoRepo.GetVideoByVideoId(req.VideoId)
 
-	//点赞用户点赞数加1
-	err = s.UserRepo.UpdateFavoriteCount(req.Token, req.ActionType)
-	if err != nil {
-		*reply = model.Response{
-			StatusCode: 1,
-			StatusMsg:  err.Error(),
-		}
-		return err
-	}
-	//被点赞用户被点赞数加1
-	err = s.UserRepo.UpdateTotalFavorited(video.Author.Id, req.ActionType)
-	if err != nil {
-		*reply = model.Response{
-			StatusCode: 1,
-			StatusMsg:  err.Error(),
-		}
-		return err
-	}
 	//数据库存入点赞数据
 	if req.ActionType == 1 {
 		err = s.FavoriteRepo.AddFavorite(userId, req.VideoId)
 		if err != nil {
 			*reply = model.Response{
-				StatusCode: 1,
+				StatusCode: 0,
 				StatusMsg:  err.Error(),
 			}
 			return err
@@ -61,17 +43,38 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		err = s.FavoriteRepo.RemoveFavorite(userId, req.VideoId)
 		if err != nil {
 			*reply = model.Response{
-				StatusCode: 1,
+				StatusCode: 0,
 				StatusMsg:  err.Error(),
 			}
 			return err
 		}
 	}
+
+	//点赞用户点赞数加1
+	err = s.UserRepo.UpdateFavoriteCount(req.Token, req.ActionType)
+	if err != nil {
+		*reply = model.Response{
+			StatusCode: 0,
+			StatusMsg:  err.Error(),
+		}
+		return err
+	}
+
+	//被点赞用户被点赞数加1
+	err = s.UserRepo.UpdateTotalFavorited(video.Author.Id, req.ActionType)
+	if err != nil {
+		*reply = model.Response{
+			StatusCode: 0,
+			StatusMsg:  err.Error(),
+		}
+		return err
+	}
+
 	//被点赞视频点赞数加一
 	err = s.VideoRepo.UpdateFavoriteCount(req.VideoId, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
-			StatusCode: 1,
+			StatusCode: 0,
 			StatusMsg:  err.Error(),
 		}
 		return err
@@ -83,7 +86,6 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 }
 func RunFavoriteServer() {
 	// 创建服务实例
-
 	favoriteService := &FavoriteServiceImpl{
 		UserRepo:     db.NewMySQLUserRepository(),
 		VideoRepo:    db.NewMySQLVideoRepository(),
