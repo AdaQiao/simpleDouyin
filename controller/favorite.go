@@ -19,7 +19,7 @@ func FavoriteAction(c *gin.Context) {
 	} else {
 		action_type = 2
 	}
-	token := c.PostForm("token")
+	token := c.Query("token")
 	fmt.Println(token)
 	fmt.Println(action_type)
 	mes := model.FavoriteMessage{
