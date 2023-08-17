@@ -39,6 +39,26 @@ func FavoriteAction(c *gin.Context) {
 
 // FavoriteList all users have same favorite video list
 func FavoriteList(c *gin.Context) {
+	token := c.Query("token")
+	userIDStr := c.Query("user_id")
+	// 连接到远程RPC服务器
+	client, err := rpc.Dial("tcp", "127.0.0.1:9094")
+	if err != nil {
+		log.Println("RPC连接失败：", err)
+	}
+
+	user_id, err := strconv.ParseInt(userIDStr, 10, 64)
+	// 调用远程注册方法
+	var reply model.VideoListResponse
+	err = client.Call("FavoriteServiceImpl.FavoriteList", model.UserIdToken{
+		Token:  token,
+		UserId: user_id,
+	}, &reply)
+	if err != nil {
+		log.Println("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
+
 	c.JSON(http.StatusOK, model.VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,

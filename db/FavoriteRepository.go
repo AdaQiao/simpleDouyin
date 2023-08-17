@@ -11,6 +11,7 @@ type FavoriteRepository interface {
 	AddFavorite(userID, videoID int64) error
 	RemoveFavorite(userID, videoID int64) error
 	CheckFavorite(userID, videoID int64) (bool, error)
+	GetFavoriteVideoById(userId int64) ([]int64, error)
 }
 
 type MySQLFavoriteRepository struct {
@@ -89,4 +90,35 @@ func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool,
 		// 已取消点赞
 		return false, nil
 	}
+}
+
+func (repo *MySQLFavoriteRepository) GetFavoriteVideoById(userId int64) ([]int64, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	// 执行查询视频数据的SQL语句
+	query := `
+		SELECT video_id FROM favorite WHERE user_id = ? AND is_favorite = 1
+	`
+	rows, err := dB.Query(query, userId)
+	if err != nil {
+		log.Println("查询喜欢列表失败:", err)
+		return nil, err
+	}
+	var videoIds []int64
+	for rows.Next() {
+		var videoId int64
+		err := rows.Scan(&videoId)
+		if err != nil {
+			log.Println("扫描视频数据失败:", err)
+			return nil, err
+		}
+		videoIds = append(videoIds, videoId)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println("遍历视频结果失败:", err)
+		return nil, err
+	}
+	return videoIds, nil
 }

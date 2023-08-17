@@ -85,6 +85,47 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	}
 	return nil
 }
+
+func (s *FavoriteServiceImpl) FavoriteList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error {
+	_, err := s.UserRepo.GetUserId(userIDToken.Token)
+	if err != nil {
+		reply = nil
+		return fmt.Errorf("user doesn't exist")
+	}
+	VideoIds, err := s.FavoriteRepo.GetFavoriteVideoById(userIDToken.UserId)
+	if err != nil {
+		*reply = model.VideoListResponse{
+			Response: model.Response{
+				StatusCode: 1,
+			},
+			VideoList: nil,
+		}
+		return nil
+	}
+	Videos := make([]model.Video, len(VideoIds))
+	for i := 0; i < len(VideoIds); i++ {
+		Videos[i], err = s.VideoRepo.GetVideoByVideoId(VideoIds[i])
+		if err != nil {
+			*reply = model.VideoListResponse{
+				Response: model.Response{
+					StatusCode: 1,
+				},
+				VideoList: nil,
+			}
+			return nil
+		}
+		Videos[i].IsFavorite = true
+	}
+
+	*reply = model.VideoListResponse{
+		Response: model.Response{
+			StatusCode: 0,
+		},
+		VideoList: Videos,
+	}
+	return nil
+}
+
 func RunFavoriteServer() {
 	// 创建服务实例
 	favoriteService := &FavoriteServiceImpl{
