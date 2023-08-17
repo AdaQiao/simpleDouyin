@@ -71,7 +71,6 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 			fmt.Println("查询是否点赞失败:", err)
 		}
 		Videos[i].IsFavorite = isLike
-		fmt.Println("Videos[i].IsFavorite = ", Videos[i].IsFavorite)
 	}
 
 	*reply = model.VideoListResponse{

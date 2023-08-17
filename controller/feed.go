@@ -11,6 +11,7 @@ import (
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	lastestTime := c.Query("latest_time")
+	token := c.Query("token")
 	// 连接到远程RPC服务器
 	client, err := rpc.Dial("tcp", "127.0.0.1:9093")
 	if err != nil {
@@ -18,7 +19,7 @@ func Feed(c *gin.Context) {
 	}
 	// 调用远程登录方法
 	var reply model.FeedResponse
-	err = client.Call("FeedServiceImpl.GetVideoList", lastestTime, &reply)
+	err = client.Call("FeedServiceImpl.GetVideoList", model.FeedRequest{LatestTime: lastestTime, Token: token}, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}

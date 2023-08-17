@@ -79,7 +79,6 @@ func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool,
 	row := dB.QueryRow(query, userID, videoID)
 	var count int
 	err := row.Scan(&count)
-	fmt.Println("count =", count)
 	if err != nil {
 		log.Println("查询记录数失败:", err)
 		return false, err

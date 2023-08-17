@@ -12,7 +12,7 @@ import (
 )
 
 type FeedService interface {
-	GetVideoList(lastestTime string, reply *model.FeedResponse) error
+	GetVideoList(feedReq model.FeedRequest, reply *model.FeedResponse) error
 }
 
 type FeedServiceImpl struct {
@@ -21,8 +21,8 @@ type FeedServiceImpl struct {
 	FavoriteRepo *db.MySQLFavoriteRepository
 }
 
-func (s *FeedServiceImpl) GetVideoList(lastestTime string, reply *model.FeedResponse) error {
-	curTime, err := strconv.ParseInt(lastestTime, 10, 64)
+func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.FeedResponse) error {
+	curTime, err := strconv.ParseInt(feedReq.LatestTime, 10, 64)
 	if err != nil || curTime == int64(0) {
 		curTime = time.Now().Unix()
 	}
@@ -34,6 +34,20 @@ func (s *FeedServiceImpl) GetVideoList(lastestTime string, reply *model.FeedResp
 	for i := 0; i < len(videos); i++ {
 		user, _ := s.UserRepo.GetUser(tokens[i])
 		videos[i].Author = *user
+	}
+	//如果用户已登录，查询点赞状态
+	if feedReq.Token != "" {
+		for i := 0; i < len(videos); i++ {
+			userId, err := s.UserRepo.GetUserId(feedReq.Token)
+			if err != nil {
+				fmt.Println("查询用户id失败:", err)
+			}
+			isLike, err := s.FavoriteRepo.CheckFavorite(userId, videos[i].Id)
+			if err != nil {
+				fmt.Println("查询是否点赞失败:", err)
+			}
+			videos[i].IsFavorite = isLike
+		}
 	}
 	*reply = model.FeedResponse{
 		Response:  model.Response{StatusCode: 0},
