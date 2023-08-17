@@ -55,6 +55,10 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 		return fmt.Errorf("user doesn't exist")
 	}
 	Videos, err := s.VideoRepo.GetVideoById(userIDToken.UserId)
+	for i := 0; i < len(Videos); i++ {
+		user, _ := s.UserRepo.GetUser(userIDToken.Token)
+		Videos[i].Author = *user
+	}
 	if err != nil {
 		*reply = model.VideoListResponse{
 			Response: model.Response{
