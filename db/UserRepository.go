@@ -111,7 +111,7 @@ func (repo *MySQLUserRepository) UpdateFavoriteCount(token string, mode int) err
 	query = "UPDATE users SET favorite_count = ? WHERE token = ?"
 	_, err = dB.Exec(query, FavoriteCount, token)
 	if err != nil {
-		log.Println("更新用户 work_count 失败:", err)
+		log.Println("更新用户 favorite_count  失败:", err)
 		return err
 	}
 
@@ -128,10 +128,10 @@ func (repo *MySQLUserRepository) UpdateTotalFavorited(userId string, mode int) e
 	} else {
 		favorited--
 	}
-	query = "UPDATE users SET favorite_count = ? WHERE id = ?"
+	query = "UPDATE users SET total_favorited = ? WHERE id = ?"
 	_, err = dB.Exec(query, favorited, userId)
 	if err != nil {
-		log.Println("更新用户 work_count 失败:", err)
+		log.Println("更新用户 total_favorited 失败:", err)
 		return err
 	}
 
