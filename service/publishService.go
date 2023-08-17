@@ -70,9 +70,12 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 		if err != nil {
 			fmt.Println("查询是否点赞失败:", err)
 		}
+		if isLike == true {
+			fmt.Println("已点赞该视频")
+		}
 		Videos[i].IsFavorite = isLike
 	}
-	
+
 	*reply = model.VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,

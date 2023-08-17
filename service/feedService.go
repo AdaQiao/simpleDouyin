@@ -16,8 +16,9 @@ type FeedService interface {
 }
 
 type FeedServiceImpl struct {
-	UserRepo  *db.MySQLUserRepository
-	VideoRepo *db.MySQLVideoRepository
+	UserRepo     *db.MySQLUserRepository
+	VideoRepo    *db.MySQLVideoRepository
+	FavoriteRepo *db.MySQLFavoriteRepository
 }
 
 func (s *FeedServiceImpl) GetVideoList(lastestTime string, reply *model.FeedResponse) error {
