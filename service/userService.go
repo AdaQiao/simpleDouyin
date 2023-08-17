@@ -17,7 +17,7 @@ import (
 type UserService interface {
 	Register(user model.UserPassword, reply *model.UserLoginResponse) error
 	Login(user model.UserPassword, reply *model.UserLoginResponse) error
-	UserInfo(token string, reply *model.UserResponse)
+	UserInfo(token string, reply *model.UserResponse) error
 }
 
 // 用户服务实现

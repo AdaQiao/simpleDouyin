@@ -12,8 +12,8 @@ type UserRepository interface {
 	GetUser(token string) (*model.User, error)
 	GetUserId(token string) (int64, error)
 	UpdateWorkCount(token string) error
-	UpdateFavoriteCount(token string, mode int) error
-	UpdateTotalFavorited(userId string, mode int) error
+	UpdateFavoriteCount(token string, mode int32) error
+	UpdateTotalFavorited(userId int64, mode int32) error
 }
 
 type MySQLUserRepository struct {
@@ -96,7 +96,7 @@ func (repo *MySQLUserRepository) UpdateWorkCount(token string) error {
 	return nil
 }
 
-func (repo *MySQLUserRepository) UpdateFavoriteCount(token string, mode int) error {
+func (repo *MySQLUserRepository) UpdateFavoriteCount(token string, mode int32) error {
 	// 获取用户信息
 	query := "SELECT favorite_count FROM users WHERE token = ?"
 	row := dB.QueryRow(query, token)
@@ -117,7 +117,7 @@ func (repo *MySQLUserRepository) UpdateFavoriteCount(token string, mode int) err
 
 	return nil
 }
-func (repo *MySQLUserRepository) UpdateTotalFavorited(userId string, mode int) error {
+func (repo *MySQLUserRepository) UpdateTotalFavorited(userId int64, mode int32) error {
 	query := "SELECT total_favorited FROM users WHERE id = ?"
 	row := dB.QueryRow(query, userId)
 	var favorited int64

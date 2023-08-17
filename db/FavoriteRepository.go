@@ -7,8 +7,8 @@ import (
 )
 
 type FavoriteRepository interface {
-	AddFavorite(userID, videoID int) error
-	RemoveFavorite(userID, videoID int) error
+	AddFavorite(userID, videoID int64) error
+	RemoveFavorite(userID, videoID int64) error
 }
 
 type MySQLFavoriteRepository struct {
@@ -19,7 +19,7 @@ func NewMySQLFavoriteRepository() *MySQLFavoriteRepository {
 	return &MySQLFavoriteRepository{}
 }
 
-func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int) error {
+func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int64) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 
@@ -52,7 +52,7 @@ func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int) error {
 	return nil
 }
 
-func (repo *MySQLFavoriteRepository) RemoveLike(userID, videoID int) error {
+func (repo *MySQLFavoriteRepository) RemoveFavorite(userID, videoID int64) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 

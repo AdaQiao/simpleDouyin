@@ -17,6 +17,7 @@ func main() {
 	go service.RunPublishServer()
 	go service.RunMessageServer()
 	go service.RunUserServer()
+	go service.RunFavoriteServer()
 	r := gin.Default()
 
 	initRouter(r)
