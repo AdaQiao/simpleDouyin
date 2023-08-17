@@ -18,8 +18,9 @@ type PublishService interface {
 }
 
 type PublishServiceImpl struct {
-	UserRepo  *db.MySQLUserRepository
-	VideoRepo *db.MySQLVideoRepository
+	UserRepo     *db.MySQLUserRepository
+	VideoRepo    *db.MySQLVideoRepository
+	FavoriteRepo *db.MySQLFavoriteRepository
 }
 
 func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Response) error {
@@ -63,6 +64,15 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 		}
 		return nil
 	}
+	//检查是否点赞
+	for i := 0; i < len(Videos); i++ {
+		isLike, err := s.FavoriteRepo.CheckFavorite(userIDToken.UserId, Videos[i].Id)
+		if err != nil {
+			fmt.Println("查询是否点赞失败:", err)
+		}
+		Videos[i].IsFavorite = isLike
+	}
+	
 	*reply = model.VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,

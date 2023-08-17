@@ -10,6 +10,7 @@ import (
 type FavoriteRepository interface {
 	AddFavorite(userID, videoID int64) error
 	RemoveFavorite(userID, videoID int64) error
+	CheckFavorite(userID, videoID int64) (bool, error)
 }
 
 type MySQLFavoriteRepository struct {
@@ -70,4 +71,20 @@ func (repo *MySQLFavoriteRepository) RemoveFavorite(userID, videoID int64) error
 	}
 
 	return nil
+}
+
+func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool, error) {
+	query := "SELECT COUNT(*) FROM favorite WHERE user_id = ? AND video_id = ?"
+	row := dB.QueryRow(query, userID, videoID)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		log.Println("查询记录数失败:", err)
+		return false, err
+	}
+	if count > 0 {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
