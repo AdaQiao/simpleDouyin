@@ -66,13 +66,9 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 	}
 	//检查是否点赞
 	for i := 0; i < len(Videos); i++ {
-		fmt.Println("ewfgerwgwtrhtrnsgnetng")
 		isLike, err := s.FavoriteRepo.CheckFavorite(userIDToken.UserId, Videos[i].Id)
 		if err != nil {
 			fmt.Println("查询是否点赞失败:", err)
-		}
-		if isLike == true {
-			fmt.Println("已点赞该视频")
 		}
 		Videos[i].IsFavorite = isLike
 	}

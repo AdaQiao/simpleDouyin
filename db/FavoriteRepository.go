@@ -88,6 +88,6 @@ func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool,
 		return true, nil
 	} else {
 		fmt.Println("没有点过赞")
-		return false, nil
+		return true, nil
 	}
 }
