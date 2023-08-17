@@ -117,7 +117,6 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 
 	// 设置上传到 OSS 的文件名
 	objectKey := file.FileName
-	fmt.Println("Final name: ", file.FileName)
 
 	// 开始上传文件
 	err = bucket.PutObject(objectKey, fileToUpload)

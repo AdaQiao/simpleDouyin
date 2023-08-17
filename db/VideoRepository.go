@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -117,8 +116,6 @@ func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (*model.Video
 			log.Println("扫描视频失败:", err)
 			return nil, err
 		}
-		fmt.Println("在db打印的video_id:", video.Id)
-		fmt.Println("在db打印的video_cover_url:", video.CoverUrl)
 	} else {
 		log.Println("未找到匹配的视频")
 		return nil, nil

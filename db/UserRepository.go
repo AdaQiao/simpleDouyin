@@ -47,7 +47,6 @@ func (repo *MySQLUserRepository) GetUser(token string) (*model.User, error) {
 
 	user := &model.User{}
 	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow, &user.TotalFavorited, &user.WorkCount, &user.FavoriteCount)
-	fmt.Println("user.total_favorited:", user.TotalFavorited)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// 用户不存在
@@ -57,7 +56,6 @@ func (repo *MySQLUserRepository) GetUser(token string) (*model.User, error) {
 		log.Println("查询用户失败:", err)
 		return nil, err
 	}
-	fmt.Printf("查询结果 - ID: %d, Name: %s, FollowCount: %d, FollowerCount: %d, IsFollow: %t\n", user.Id, user.Name, user.FollowCount, user.FollowerCount, user.IsFollow)
 	return user, nil
 }
 func (repo *MySQLUserRepository) GetUserId(token string) (int64, error) {
