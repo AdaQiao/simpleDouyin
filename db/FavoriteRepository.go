@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"log"
 	"sync"
 )
@@ -43,7 +42,7 @@ func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int64) error {
 		return err
 	} else {
 		if isFavorite == 1 {
-			return errors.New("已点赞")
+			return nil
 		}
 		// 已取消点赞，更新 is_favorite 为 1
 		query = "UPDATE favorite SET is_favorite = 1 WHERE id = ?"
