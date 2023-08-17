@@ -74,19 +74,22 @@ func (repo *MySQLFavoriteRepository) RemoveFavorite(userID, videoID int64) error
 }
 
 func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool, error) {
-	query := "SELECT COUNT(*) FROM favorite WHERE user_id = ? AND video_id = ?"
+	query := "SELECT is_favorite FROM favorite WHERE user_id = ? AND video_id = ?"
 	row := dB.QueryRow(query, userID, videoID)
-	var count int
-	err := row.Scan(&count)
-	if err != nil {
-		log.Println("查询记录数失败:", err)
+	var isFavorite int
+	err := row.Scan(&isFavorite)
+	if err == sql.ErrNoRows {
+		// 不存在记录，没有点过赞
+		return false, nil
+	} else if err != nil {
+		log.Println("查询喜欢记录失败:", err)
 		return false, err
-	}
-	if count > 0 {
-		fmt.Println("查到了点赞记录")
-		return true, nil
 	} else {
-		fmt.Println("没有点过赞")
+		if isFavorite == 1 {
+			fmt.Println("查到了点赞记录")
+			return true, nil
+		}
+		// 已取消点赞
 		return false, nil
 	}
 }
