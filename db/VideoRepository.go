@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -110,6 +111,8 @@ func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (*model.Video
 		&video.IsFavorite,
 		&video.Title,
 	)
+	fmt.Println("在db打印的video_id:", video.Id)
+	fmt.Println("在db打印的video_cover_url:", video.CoverUrl)
 	return &video, nil
 }
 
