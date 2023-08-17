@@ -12,6 +12,8 @@ type UserRepository interface {
 	GetUser(token string) (*model.User, error)
 	GetUserId(token string) (int64, error)
 	UpdateWorkCount(token string) error
+	UpdateFavoriteCount(token string, mode int) error
+	UpdateTotalFavorited(userId string, mode int) error
 }
 
 type MySQLUserRepository struct {
@@ -86,6 +88,48 @@ func (repo *MySQLUserRepository) UpdateWorkCount(token string) error {
 	workCount++
 	query = "UPDATE users SET work_count = ? WHERE token = ?"
 	_, err = dB.Exec(query, workCount, token)
+	if err != nil {
+		log.Println("更新用户 work_count 失败:", err)
+		return err
+	}
+
+	return nil
+}
+
+func (repo *MySQLUserRepository) UpdateFavoriteCount(token string, mode int) error {
+	// 获取用户信息
+	query := "SELECT favorite_count FROM users WHERE token = ?"
+	row := dB.QueryRow(query, token)
+	var FavoriteCount int64
+	err := row.Scan(&FavoriteCount)
+	// 更新 favorite_count
+	if mode == 1 {
+		FavoriteCount++
+	} else {
+		FavoriteCount--
+	}
+	query = "UPDATE users SET favorite_count = ? WHERE token = ?"
+	_, err = dB.Exec(query, FavoriteCount, token)
+	if err != nil {
+		log.Println("更新用户 work_count 失败:", err)
+		return err
+	}
+
+	return nil
+}
+func (repo *MySQLUserRepository) UpdateTotalFavorited(userId string, mode int) error {
+	query := "SELECT total_favorited FROM users WHERE id = ?"
+	row := dB.QueryRow(query, userId)
+	var favorited int64
+	err := row.Scan(&favorited)
+	// 更新 favorite_count
+	if mode == 1 {
+		favorited++
+	} else {
+		favorited--
+	}
+	query = "UPDATE users SET favorite_count = ? WHERE id = ?"
+	_, err = dB.Exec(query, favorited, userId)
 	if err != nil {
 		log.Println("更新用户 work_count 失败:", err)
 		return err
