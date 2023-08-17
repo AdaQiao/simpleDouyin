@@ -50,7 +50,7 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 
 	// 执行查询视频数据的SQL语句
 	query := `
-		SELECT author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title FROM videos WHERE  author_id = ?
+		SELECT id, author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title FROM videos WHERE  author_id = ?
 	`
 	rows, err := dB.Query(query, userId)
 	if err != nil {
@@ -61,6 +61,7 @@ func (repo *MySQLVideoRepository) GetVideoById(userId int64) ([]model.Video, err
 	for rows.Next() {
 		var video model.Video
 		err := rows.Scan(
+			&video.Id,
 			&video.Author.Id,
 			&video.PlayUrl,
 			&video.CoverUrl,
