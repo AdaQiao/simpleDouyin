@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"sync"
 )
@@ -83,8 +84,10 @@ func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool,
 		return false, err
 	}
 	if count > 0 {
+		fmt.Println("查到了点赞记录")
 		return true, nil
 	} else {
+		fmt.Println("没有点过赞")
 		return false, nil
 	}
 }
