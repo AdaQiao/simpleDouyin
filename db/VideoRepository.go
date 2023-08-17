@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"log"
 	"sync"
 	"time"
@@ -12,6 +13,7 @@ type VideoRepository interface {
 	CreateVideo(video model.Video, token string) error
 	GetVideoById(userId int64) ([]model.Video, error)
 	GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, error)
+	UpdateFavoriteCount(videoId int64, mode int64) error
 }
 
 type MySQLVideoRepository struct {
@@ -134,4 +136,32 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 		return nil, 0, nil, err
 	}
 	return videos, firstTime, tokens, nil
+}
+
+func (repo *MySQLVideoRepository) UpdateFavoriteCount(videoId int64, mode int64) error {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	// 根据mode选择执行的操作
+	var query string
+	if mode == 0 {
+		query = `
+			UPDATE videos SET favorite_count = favorite_count - 1 WHERE id = ?
+		`
+	} else if mode == 1 {
+		query = `
+			UPDATE videos SET favorite_count = favorite_count + 1 WHERE id = ?
+		`
+	} else {
+		return errors.New("无效的mode值")
+	}
+
+	// 执行更新操作
+	_, err := dB.Exec(query, videoId)
+	if err != nil {
+		log.Println("更新收藏数失败:", err)
+		return err
+	}
+
+	return nil
 }
