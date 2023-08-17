@@ -59,10 +59,4 @@ func FavoriteList(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, reply)
 
-	c.JSON(http.StatusOK, model.VideoListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		VideoList: model.DemoVideos,
-	})
 }
