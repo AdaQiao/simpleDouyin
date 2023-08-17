@@ -37,7 +37,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 				StatusCode: 1,
 				StatusMsg:  err.Error(),
 			}
-			return err
+			return nil
 		}
 	} else if req.ActionType == 2 {
 		err = s.FavoriteRepo.RemoveFavorite(userId, req.VideoId)
@@ -46,7 +46,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 				StatusCode: 1,
 				StatusMsg:  err.Error(),
 			}
-			return err
+			return nil
 		}
 	}
 
@@ -57,7 +57,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		}
-		return err
+		return nil
 	}
 
 	//被点赞用户被点赞数加1
@@ -67,7 +67,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		}
-		return err
+		return nil
 	}
 
 	//被点赞视频点赞数加一
@@ -77,7 +77,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		}
-		return err
+		return nil
 	}
 	*reply = model.Response{
 		StatusCode: 0,
