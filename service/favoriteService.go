@@ -62,6 +62,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 
 	//被点赞用户被点赞数更新
 	err = s.UserRepo.UpdateTotalFavorited(video.Author.Id, req.ActionType)
+	fmt.Println("video.Author.Id:", video.Author.Id)
 	if err != nil {
 		*reply = model.Response{
 			StatusCode: 1,
