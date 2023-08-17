@@ -11,6 +11,7 @@ import (
 
 type FavoriteService interface {
 	FavoriteVideo(req model.FavoriteMessage, reply *model.Response) error
+	FavoriteList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error
 }
 type FavoriteServiceImpl struct {
 	UserRepo     *db.MySQLUserRepository
