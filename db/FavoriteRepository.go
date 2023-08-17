@@ -11,7 +11,7 @@ type FavoriteRepository interface {
 	AddFavorite(userID, videoID int64) error
 	RemoveFavorite(userID, videoID int64) error
 	CheckFavorite(userID, videoID int64) (bool, error)
-	GetFavoriteVideoById(userId int64) ([]int64, error)
+	GetFavoriteVideoIdByUserId(userId int64) ([]int64, error)
 }
 
 type MySQLFavoriteRepository struct {
@@ -92,7 +92,7 @@ func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool,
 	}
 }
 
-func (repo *MySQLFavoriteRepository) GetFavoriteVideoById(userId int64) ([]int64, error) {
+func (repo *MySQLFavoriteRepository) GetFavoriteVideoIdByUserId(userId int64) ([]int64, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 

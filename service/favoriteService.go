@@ -92,7 +92,7 @@ func (s *FavoriteServiceImpl) FavoriteList(userIDToken model.UserIdToken, reply 
 		reply = nil
 		return fmt.Errorf("user doesn't exist")
 	}
-	VideoIds, err := s.FavoriteRepo.GetFavoriteVideoById(userIDToken.UserId)
+	VideoIds, err := s.FavoriteRepo.GetFavoriteVideoIdByUserId(userIDToken.UserId)
 	if err != nil {
 		*reply = model.VideoListResponse{
 			Response: model.Response{
@@ -104,7 +104,9 @@ func (s *FavoriteServiceImpl) FavoriteList(userIDToken model.UserIdToken, reply 
 	}
 	Videos := make([]model.Video, len(VideoIds))
 	for i := 0; i < len(VideoIds); i++ {
+		fmt.Println("videoId :", VideoIds[i])
 		Videos[i], err = s.VideoRepo.GetVideoByVideoId(VideoIds[i])
+		fmt.Println("video.cover_url:", Videos[i].CoverUrl)
 		if err != nil {
 			*reply = model.VideoListResponse{
 				Response: model.Response{
