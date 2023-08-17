@@ -41,7 +41,7 @@ func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int64) error {
 		return err
 	} else {
 		// 已存在记录，更新is_favorite为1
-		query = "UPDATE user_likes SET is_favorite = 1 WHERE id = ?"
+		query = "UPDATE favorite SET is_favorite = 1 WHERE id = ?"
 		_, err = dB.Exec(query, id)
 		if err != nil {
 			log.Println("更新喜欢记录失败:", err)
