@@ -27,7 +27,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		}
 		return fmt.Errorf("user didn't uploaded")
 	}
-	video, err := s.VideoRepo.GetVideoByVideoId(req.VideoId)
+	authorId, err := s.VideoRepo.GetAuthorIdByVideoId(req.VideoId)
 
 	//数据库存入点赞数据
 	if req.ActionType == 1 {
@@ -61,8 +61,8 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	}
 
 	//被点赞用户被点赞数更新
-	err = s.UserRepo.UpdateTotalFavorited(video.Author.Id, req.ActionType)
-	fmt.Println("video.Author.Id:", video.Author.Id)
+	err = s.UserRepo.UpdateTotalFavorited(authorId, req.ActionType)
+	fmt.Println("authorId:", authorId)
 	if err != nil {
 		*reply = model.Response{
 			StatusCode: 1,

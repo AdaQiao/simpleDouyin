@@ -14,6 +14,7 @@ type VideoRepository interface {
 	GetVideoById(userId int64) ([]model.Video, error)
 	GetVideoByVideoId(videoId int64) (model.Video, error)
 	GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, []string, error)
+	GetAuthorIdByVideoId(videoId int64) (int64, error)
 	UpdateFavoriteCount(videoId int64, mode int32) error
 }
 
@@ -165,6 +166,22 @@ func (repo *MySQLVideoRepository) GetVideosByTimestamp(timestamp int64) ([]model
 		return nil, 0, nil, err
 	}
 	return videos, firstTime, tokens, nil
+}
+
+func (repo *MySQLVideoRepository) GetAuthorIdByVideoId(videoId int64) (int64, error) {
+	// 执行查询视频数据的SQL语句
+	query := `
+		SELECT author_id FROM videos WHERE id = ?
+	`
+	row := dB.QueryRow(query, videoId)
+	var authorId int64
+	err := row.Scan(&authorId)
+	if err != nil {
+		log.Println("查询作者Id失败:", err)
+		return 0, err
+	}
+	return authorId, nil
+
 }
 
 func (repo *MySQLVideoRepository) UpdateFavoriteCount(videoId int64, mode int32) error {
