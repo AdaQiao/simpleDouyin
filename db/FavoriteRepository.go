@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"sync"
 )
@@ -74,12 +73,10 @@ func (repo *MySQLFavoriteRepository) RemoveFavorite(userID, videoID int64) error
 }
 
 func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool, error) {
-	fmt.Println("用来查询点赞的userId：", userID)
-	query := "SELECT id, is_favorite FROM favorite WHERE user_id = ? AND video_id = ?"
+	query := "SELECT is_favorite FROM favorite WHERE user_id = ? AND video_id = ?"
 	row := dB.QueryRow(query, userID, videoID)
-	var id int64
 	var isFavorite int
-	err := row.Scan(&id, &isFavorite)
+	err := row.Scan(&isFavorite)
 	if err == sql.ErrNoRows {
 		// 不存在记录，没有点过赞
 		return false, nil
@@ -88,7 +85,6 @@ func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool,
 		return false, err
 	} else {
 		if isFavorite == 1 {
-			fmt.Println("查到了点赞记录")
 			return true, nil
 		}
 		// 已取消点赞
