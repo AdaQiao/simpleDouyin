@@ -75,6 +75,8 @@ func (repo *MySQLFavoriteRepository) RemoveFavorite(userID, videoID int64) error
 }
 
 func (repo *MySQLFavoriteRepository) CheckFavorite(userID, videoID int64) (bool, error) {
+	fmt.Println("userId:", userID)
+	fmt.Println("videoId = ", videoID)
 	query := "SELECT COUNT(*) FROM favorite WHERE user_id = ? AND video_id = ?"
 	row := dB.QueryRow(query, userID, videoID)
 	var count int
