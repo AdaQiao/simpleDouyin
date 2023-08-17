@@ -62,7 +62,6 @@ func (repo *MySQLFavoriteRepository) AddFavorite(userID, videoID int64) error {
 func (repo *MySQLFavoriteRepository) RemoveFavorite(userID, videoID int64) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-
 	// 更新is_favorite为0
 	query := "UPDATE favorite SET is_favorite = 0 WHERE user_id = ? AND video_id = ?"
 	_, err := dB.Exec(query, userID, videoID)

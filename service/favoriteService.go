@@ -50,7 +50,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		}
 	}
 
-	//点赞用户点赞数加1
+	//点赞用户点赞数更新
 	err = s.UserRepo.UpdateFavoriteCount(req.Token, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
@@ -60,7 +60,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		return nil
 	}
 
-	//被点赞用户被点赞数加1
+	//被点赞用户被点赞数更新
 	err = s.UserRepo.UpdateTotalFavorited(video.Author.Id, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
@@ -70,7 +70,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		return nil
 	}
 
-	//被点赞视频点赞数加一
+	//被点赞视频点赞数更新
 	err = s.VideoRepo.UpdateFavoriteCount(req.VideoId, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
