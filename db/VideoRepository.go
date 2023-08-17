@@ -95,6 +95,7 @@ func (repo *MySQLVideoRepository) GetVideoByVideoId(videoId int64) (*model.Video
 		SELECT id, author_id, play_url, cover_url, favorite_count, comment_count, is_favorite, title FROM videos WHERE id = ?
 	`
 	var video model.Video
+	fmt.Println("在db打印的查询前的VideoId:", videoId)
 	rows, err := dB.Query(query, videoId)
 	if err != nil {
 		log.Println("查询视频失败:", err)
