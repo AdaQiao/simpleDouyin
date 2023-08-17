@@ -22,7 +22,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	userId, err := s.UserRepo.GetUserId(req.Token)
 	if err != nil {
 		*reply = model.Response{
-			StatusCode: 0,
+			StatusCode: 1,
 			StatusMsg:  "user didn't uphhhhhhloaded",
 		}
 		return fmt.Errorf("user didn'gffgsfgfsgsdfgt uploaded")
@@ -34,7 +34,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		err = s.FavoriteRepo.AddFavorite(userId, req.VideoId)
 		if err != nil {
 			*reply = model.Response{
-				StatusCode: 0,
+				StatusCode: 1,
 				StatusMsg:  err.Error(),
 			}
 			return err
@@ -43,7 +43,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 		err = s.FavoriteRepo.RemoveFavorite(userId, req.VideoId)
 		if err != nil {
 			*reply = model.Response{
-				StatusCode: 0,
+				StatusCode: 1,
 				StatusMsg:  err.Error(),
 			}
 			return err
@@ -54,7 +54,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	err = s.UserRepo.UpdateFavoriteCount(req.Token, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
-			StatusCode: 0,
+			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		}
 		return err
@@ -64,7 +64,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	err = s.UserRepo.UpdateTotalFavorited(video.Author.Id, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
-			StatusCode: 0,
+			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		}
 		return err
@@ -74,7 +74,7 @@ func (s *FavoriteServiceImpl) FavoriteVideo(req model.FavoriteMessage, reply *mo
 	err = s.VideoRepo.UpdateFavoriteCount(req.VideoId, req.ActionType)
 	if err != nil {
 		*reply = model.Response{
-			StatusCode: 0,
+			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		}
 		return err
