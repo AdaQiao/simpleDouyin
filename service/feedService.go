@@ -47,6 +47,7 @@ func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.F
 				fmt.Println("查询是否点赞失败:", err)
 			}
 			videos[i].IsFavorite = isLike
+			fmt.Println("videos[i].IsFavorite = ", videos[i].IsFavorite)
 		}
 	}
 	*reply = model.FeedResponse{
