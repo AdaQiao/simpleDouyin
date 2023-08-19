@@ -46,8 +46,24 @@ func CommentAction(c *gin.Context) {
 
 // CommentList all videos have same demo comment list
 func CommentList(c *gin.Context) {
-	c.JSON(http.StatusOK, model.CommentListResponse{
-		Response:    model.Response{StatusCode: 0},
-		CommentList: model.DemoComments,
-	})
+	token := c.Query("token")
+	userIDStr := c.Query("user_id")
+	user_id, _ := strconv.ParseInt(userIDStr, 10, 64)
+
+	// 连接到远程RPC服务器
+	client, err := rpc.Dial("tcp", "127.0.0.1:9094")
+	if err != nil {
+		log.Println("RPC连接失败：", err)
+	}
+
+	// 调用远程注册方法
+	var reply model.CommentListResponse
+	err = client.Call("CommentServiceImpl.CommentList", model.UserIdToken{
+		Token:  token,
+		UserId: user_id,
+	}, &reply)
+	if err != nil {
+		log.Println("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
 }
