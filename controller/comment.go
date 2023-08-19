@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"log"
 	"net/http"
+	"net/rpc"
+	"strconv"
 
 	"github.com/AdaQiao/simpleDouyin/model"
 	"github.com/gin-gonic/gin"
@@ -10,24 +13,35 @@ import (
 // CommentAction no practical effect, just check if token is valid
 func CommentAction(c *gin.Context) {
 	token := c.Query("token")
-	actionType := c.Query("action_type")
-
-	if user, exist := UsersLoginInfo[token]; exist {
-		if actionType == "1" {
-			text := c.Query("comment_text")
-			c.JSON(http.StatusOK, model.CommentActionResponse{Response: model.Response{StatusCode: 0},
-				Comment: model.Comment{
-					Id:         1,
-					User:       user,
-					Content:    text,
-					CreateDate: "05-01",
-				}})
-			return
-		}
-		c.JSON(http.StatusOK, model.Response{StatusCode: 0})
+	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
+	var actionType int32
+	if c.Query("action_type") == "1" {
+		actionType = 1
 	} else {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		actionType = 2
 	}
+	commentTxet := c.Query("comment_text")
+	commentId, _ := strconv.ParseInt(c.Query("comment_id"), 10, 64)
+
+	mes := model.CommentActionRequest{
+		Token:       token,
+		VideoId:     videoId,
+		ActionType:  actionType,
+		CommentText: commentTxet,
+		CommentId:   commentId,
+	}
+
+	client, err := rpc.Dial("tcp", "127.0.0.1:9094")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
+	}
+	// 调用远程登录方法
+	var reply model.CommentActionResponse
+	err = client.Call("CommentServiceImpl.Comment", mes, &reply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
 }
 
 // CommentList all videos have same demo comment list
