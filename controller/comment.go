@@ -22,8 +22,9 @@ func CommentAction(c *gin.Context) {
 	}
 	commentTxet := c.Query("comment_text")
 	commentId, _ := strconv.ParseInt(c.Query("comment_id"), 10, 64)
+	commentId++
 
-	mes := model.CommentActionRequest{
+	mes := model.CommentActionRequest {
 		Token:       token,
 		VideoId:     videoId,
 		ActionType:  actionType,
