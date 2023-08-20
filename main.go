@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/AdaQiao/simpleDouyin/db"
 	"github.com/AdaQiao/simpleDouyin/service"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 func main() {
@@ -18,6 +19,7 @@ func main() {
 	go service.RunMessageServer()
 	go service.RunUserServer()
 	go service.RunFavoriteServer()
+	go service.RunCommentServer()
 	r := gin.Default()
 
 	initRouter(r)

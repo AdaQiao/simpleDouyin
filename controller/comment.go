@@ -49,7 +49,7 @@ func CommentList(c *gin.Context) {
 	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
 
 	// 连接到远程RPC服务器
-	client, err := rpc.Dial("tcp", "127.0.0.1:9094")
+	client, err := rpc.Dial("tcp", "127.0.0.1:9098")
 	if err != nil {
 		log.Println("RPC连接失败：", err)
 	}
