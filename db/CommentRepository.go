@@ -4,12 +4,15 @@ import (
 	"log"
 	"sync"
 	"time"
+
+	"github.com/AdaQiao/simpleDouyin/model"
 )
 
 type CommentRepository interface {
 	AddComment(userID, videoID, commentID int64, comment_text string) error
 	RemoveComment(userID, videoID, comment_id int64) error
 	GetCommentIdByVideoId(videoId int64) ([]int64, error)
+	GetCommentByCommentId(commentId int64) (*model.Comment, error)
 }
 
 type MySQLCommentRepository struct {
@@ -80,4 +83,37 @@ func (repo *MySQLCommentRepository) GetCommentIdByVideoId(videoId int64) ([]int6
 		return nil, err
 	}
 	return commentIds, nil
+}
+
+func (repo *MySQLCommentRepository) GetCommentByCommentId(commentId int64) (*model.Comment, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	// 执行查找评论数据的SQL语句
+	query := "SELECT user_id, video_id, comment_id, comment_text, create_date FROM comment WHERE comment_id = ?"
+	var comment model.Comment
+	rows, err := dB.Query(query, commentId)
+	if err != nil {
+		log.Println("查询评论失败：", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(
+			&comment.UserId,
+			&comment.VideoId,
+			&comment.CommentId,
+			&comment.CommentText,
+			&comment.CreateDate,
+		)
+		if err != nil {
+			log.Println("扫描评论失败:", err)
+			return nil, err
+		}
+	} else {
+		log.Println("未找到匹配的评论")
+		return nil, nil
+	}
+	return &comment, nil
 }

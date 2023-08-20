@@ -16,6 +16,7 @@ type VideoRepository interface {
 	GetVideosByTimestamp(timestamp int64) ([]model.Video, int64, []string, error)
 	GetAuthorIdByVideoId(videoId int64) (int64, error)
 	UpdateFavoriteCount(videoId int64, mode int32) error
+	UpdateCommentCount(videoId int64, mode int32) error
 }
 
 type MySQLVideoRepository struct {
@@ -192,7 +193,6 @@ func (repo *MySQLVideoRepository) GetAuthorIdByVideoId(videoId int64) (int64, er
 		return 0, err
 	}
 	return authorId, nil
-
 }
 
 func (repo *MySQLVideoRepository) UpdateFavoriteCount(videoId int64, mode int32) error {
@@ -208,6 +208,34 @@ func (repo *MySQLVideoRepository) UpdateFavoriteCount(videoId int64, mode int32)
 	} else if mode == 1 {
 		query = `
 			UPDATE videos SET favorite_count = favorite_count + 1 WHERE id = ?
+		`
+	} else {
+		return errors.New("无效的mode值")
+	}
+
+	// 执行更新操作
+	_, err := dB.Exec(query, videoId)
+	if err != nil {
+		log.Println("更新收藏数失败:", err)
+		return err
+	}
+
+	return nil
+}
+
+func (repo *MySQLVideoRepository) UpdateCommentCount(videoId int64, mode int32) error {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
+	// 根据mode选择执行的操作
+	var query string
+	if mode == 2 {
+		query = `
+			UPDATE videos SET comment_count = comment_count - 1 WHERE id = ?
+		`
+	} else if mode == 1 {
+		query = `
+			UPDATE videos SET comment_count = comment_count + 1 WHERE id = ?
 		`
 	} else {
 		return errors.New("无效的mode值")

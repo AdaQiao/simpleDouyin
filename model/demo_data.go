@@ -15,10 +15,11 @@ var DemoVideos = []Video{
 
 var DemoComments = []Comment{
 	{
-		Id:         1,
-		User:       DemoUser,
-		Content:    "Test Comment",
-		CreateDate: "05-01",
+		CommentId:   1,
+		UserId:      2,
+		VideoId:     1,
+		CommentText: "Test Comment",
+		CreateDate:  "05-01",
 	},
 }
 
