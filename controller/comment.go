@@ -23,11 +23,11 @@ func CommentAction(c *gin.Context) {
 	commentTxet := c.Query("comment_text")
 	commentId, _ := strconv.ParseInt(c.Query("comment_id"), 10, 64)
 	
-	log.Printf("c.Query(comment_id)", commentId)
+	log.Println("c.Query(comment_id)", commentId)
 
 	commentId++
 
-	log.Printf("c.Query(comment_id) and plus one", commentId)
+	log.Println("c.Query(comment_id) and plus one", commentId)
 
 	mes := model.CommentActionRequest {
 		Token:       token,
