@@ -71,6 +71,8 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 
 	comment, _ := s.CommentRepo.GetCommentByCommentId(req.CommentId)
 
+	log.Println("CommentService add comment commentID:", req.CommentId)
+
 	*reply = model.CommentActionResponse{
 		Response: model.Response{
 			StatusCode: 0,

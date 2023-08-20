@@ -28,7 +28,9 @@ func (repo *MySQLCommentRepository) AddComment(userID, videoID, commentID int64,
 	defer repo.mutex.Unlock()
 
 	//添加新评论
-	log.Println(commentID)
+	
+	log.Println("CommentRepository add comment commentID:", commentID)
+
 	var err error = nil
 	sqlDateFormat := "2006-01-02"
 	current_time := time.Now().Format(sqlDateFormat)
