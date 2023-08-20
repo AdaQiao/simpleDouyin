@@ -68,10 +68,14 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 		}
 		return nil
 	}
+
+	comment, _ := s.CommentRepo.GetCommentByCommentId(req.CommentId)
+
 	*reply = model.CommentActionResponse{
 		Response: model.Response{
 			StatusCode: 0,
 		},
+		Comment: *comment,
 	}
 	return nil
 }
