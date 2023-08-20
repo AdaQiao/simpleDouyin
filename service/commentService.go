@@ -123,7 +123,7 @@ func RunCommentServer() {
 	rpc.Register(CommentService)
 
 	// 启动RPC服务器
-	listener, err := net.Listen("tcp", "127.0.0.1:9098")
+	listener, err := net.Listen("tcp", "127.0.0.1:9095")
 	if err != nil {
 		log.Fatal("RPC服务器启动失败:", err)
 	}
