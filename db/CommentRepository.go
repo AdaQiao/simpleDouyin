@@ -28,14 +28,14 @@ func (repo *MySQLCommentRepository) AddComment(userID, videoID, commentID int64,
 	defer repo.mutex.Unlock()
 
 	//添加新评论
-	
+
 	log.Println("CommentRepository add comment commentID:", commentID)
 
 	var err error = nil
 	sqlDateFormat := "2006-01-02"
 	current_time := time.Now().Format(sqlDateFormat)
-	query := "INSERT INTO comment (user_id, video_id, comment_id, create_date, comment_text) VALUES (?, ?, ?, ?, ?)"
-	_, err = dB.Exec(query, userID, videoID, commentID, current_time, comment_text)
+	query := "INSERT INTO comment (user_id, video_id, create_date, comment_text) VALUES (?, ?, ?, ?)"
+	_, err = dB.Exec(query, userID, videoID, current_time, comment_text)
 	if err != nil {
 		log.Println("添加评论失败:", err)
 		return err

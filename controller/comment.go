@@ -10,13 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var maxCommentID int64 = 0
-
-func generateCommentID() int64 {
-	maxCommentID++
-	return maxCommentID
-}
-
 // CommentAction no practical effect, just check if token is valid
 func CommentAction(c *gin.Context) {
 	token := c.Query("token")
@@ -29,7 +22,7 @@ func CommentAction(c *gin.Context) {
 	}
 	commentTxet := c.Query("comment_text")
 
-	commentId := generateCommentID()
+	commentId, err := strconv.ParseInt(c.Query("comment_id"), 10, 64)
 
 	mes := model.CommentActionRequest{
 		Token:       token,
