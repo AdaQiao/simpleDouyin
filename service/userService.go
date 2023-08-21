@@ -63,7 +63,7 @@ func (s *UserServiceImpl) Register(user model.UserPassword, reply *model.UserLog
 // 用户登录
 func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginResponse) error {
 	token := user.Username + user.Password
-	userInfo, err := s.repo.GetUser(token)
+	userInfo, err := s.repo.GetUserByToken(token)
 	if err == nil {
 		*reply = model.UserLoginResponse{
 			Response: model.Response{StatusCode: 0},
@@ -80,7 +80,7 @@ func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginR
 
 // 用户信息
 func (s *UserServiceImpl) UserInfo(token string, reply *model.UserResponse) error {
-	userInfo, err := s.repo.GetUser(token)
+	userInfo, err := s.repo.GetUserByToken(token)
 	if err == nil {
 		*reply = model.UserResponse{
 			Response: model.Response{StatusCode: 0},

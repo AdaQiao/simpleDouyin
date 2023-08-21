@@ -32,7 +32,7 @@ func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.F
 		return err
 	}
 	for i := 0; i < len(videos); i++ {
-		user, _ := s.UserRepo.GetUser(tokens[i])
+		user, _ := s.UserRepo.GetUserByToken(tokens[i])
 		videos[i].Author = *user
 	}
 	//如果用户已登录，查询点赞状态

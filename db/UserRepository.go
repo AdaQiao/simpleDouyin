@@ -9,8 +9,9 @@ import (
 
 type UserRepository interface {
 	CreateUser(user model.UserPassword) error
-	GetUser(token string) (*model.User, error)
+	GetUserByToken(token string) (*model.User, error)
 	GetUserId(token string) (int64, error)
+	GetUserByUserId(userId int64) (*model.User, error)
 	UpdateWorkCount(token string) error
 	UpdateFavoriteCount(token string, mode int32) error
 	UpdateTotalFavorited(userId int64, mode int32) error
@@ -40,13 +41,13 @@ func (repo *MySQLUserRepository) CreateUser(user model.UserPassword) error {
 	return nil
 }
 
-func (repo *MySQLUserRepository) GetUser(token string) (*model.User, error) {
+func (repo *MySQLUserRepository) GetUserByToken(token string) (*model.User, error) {
 	// 执行查询用户数据的SQL语句
-	query := "SELECT id, name, follow_count, follower_count, is_follow ,total_favorited, work_count, favorite_count FROM users WHERE token = ?"
+	query := "SELECT id, name, follow_count, follower_count, is_follow ,total_favorited, work_count, favorite_count, avatar FROM users WHERE token = ?"
 	row := dB.QueryRow(query, token)
 
 	user := &model.User{}
-	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow, &user.TotalFavorited, &user.WorkCount, &user.FavoriteCount)
+	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow, &user.TotalFavorited, &user.WorkCount, &user.FavoriteCount, &user.Avatar)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// 用户不存在
@@ -75,6 +76,25 @@ func (repo *MySQLUserRepository) GetUserId(token string) (int64, error) {
 		return -1, err
 	}
 	return userId, nil
+}
+
+func (repo *MySQLUserRepository) GetUserByUserId(userId int64) (*model.User, error) {
+	// 执行查询用户数据的SQL语句
+	query := "SELECT id, name, follow_count, follower_count, is_follow ,total_favorited, work_count, favorite_count, avatar FROM users WHERE id = ?"
+	row := dB.QueryRow(query, userId)
+
+	user := &model.User{}
+	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow, &user.TotalFavorited, &user.WorkCount, &user.FavoriteCount, &user.Avatar)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// 用户不存在
+			fmt.Println("用户不存在:", userId)
+			return nil, fmt.Errorf("用户不存在")
+		}
+		log.Println("查询用户失败:", err)
+		return nil, err
+	}
+	return user, nil
 }
 
 func (repo *MySQLUserRepository) UpdateWorkCount(token string) error {

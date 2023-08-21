@@ -24,7 +24,7 @@ type PublishServiceImpl struct {
 }
 
 func (s *PublishServiceImpl) Publish(req model.UploadViewReq, reply *model.Response) error {
-	user, err := s.UserRepo.GetUser(req.Token)
+	user, err := s.UserRepo.GetUserByToken(req.Token)
 	if err != nil {
 		return fmt.Errorf("user doesn't exist")
 	}
@@ -56,7 +56,7 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 	}
 	Videos, err := s.VideoRepo.GetVideoById(userIDToken.UserId)
 	for i := 0; i < len(Videos); i++ {
-		user, _ := s.UserRepo.GetUser(userIDToken.Token)
+		user, _ := s.UserRepo.GetUserByToken(userIDToken.Token)
 		Videos[i].Author = *user
 	}
 	if err != nil {
