@@ -95,7 +95,8 @@ func (s *CommentServiceImpl) CommentList(videoId int64, reply *model.CommentList
 	}
 	Comments := make([]model.Comment, len(CommentIds))
 	for i := 0; i < len(CommentIds); i++ {
-		comment, err := s.CommentRepo.GetCommentByCommentId(CommentIds[i])
+		comment, userId, err := s.CommentRepo.GetCommentByCommentId(CommentIds[i])
+		User := s.UserRepo.GetUser(userId)
 		Comments[i] = *comment
 		if err != nil {
 			*reply = model.CommentListResponse{

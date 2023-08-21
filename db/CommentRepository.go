@@ -12,7 +12,7 @@ type CommentRepository interface {
 	AddComment(userID, videoID, commentID int64, comment_text string) error
 	RemoveComment(userID, videoID, comment_id int64) error
 	GetCommentIdByVideoId(videoId int64) ([]int64, error)
-	GetCommentByCommentId(commentId int64) (*model.Comment, error)
+	GetCommentByCommentId(commentId int64) (*model.Comment, int64, error)
 }
 
 type MySQLCommentRepository struct {
@@ -88,35 +88,34 @@ func (repo *MySQLCommentRepository) GetCommentIdByVideoId(videoId int64) ([]int6
 	return commentIds, nil
 }
 
-func (repo *MySQLCommentRepository) GetCommentByCommentId(commentId int64) (*model.Comment, error) {
+func (repo *MySQLCommentRepository) GetCommentByCommentId(commentId int64) (*model.Comment, int64, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-
+	var userId int64
 	// 执行查找评论数据的SQL语句
-	query := "SELECT user_id, video_id, comment_id, comment_text, create_date FROM comment WHERE comment_id = ?"
+	query := "SELECT user_id, comment_id, comment_text, create_date FROM comment WHERE comment_id = ?"
 	var comment model.Comment
 	rows, err := dB.Query(query, commentId)
 	if err != nil {
 		log.Println("查询评论失败：", err)
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
 	if rows.Next() {
 		err = rows.Scan(
-			&comment.UserId,
-			&comment.VideoId,
-			&comment.CommentId,
-			&comment.CommentText,
+			&userId,
+			&comment.Id,
+			&comment.Content,
 			&comment.CreateDate,
 		)
 		if err != nil {
 			log.Println("扫描评论失败:", err)
-			return nil, err
+			return nil, 0, err
 		}
 	} else {
 		log.Println("未找到匹配的评论")
-		return nil, nil
+		return nil, 0, nil
 	}
-	return &comment, nil
+	return &comment, userId, nil
 }
