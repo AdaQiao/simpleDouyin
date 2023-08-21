@@ -69,7 +69,7 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 		return nil
 	}
 
-	comment, _ := s.CommentRepo.GetCommentByCommentId(req.CommentId)
+	comment, _, _ := s.CommentRepo.GetCommentByCommentId(req.CommentId)
 
 	log.Println("CommentService add comment commentID:", req.CommentId)
 
@@ -96,7 +96,8 @@ func (s *CommentServiceImpl) CommentList(videoId int64, reply *model.CommentList
 	Comments := make([]model.Comment, len(CommentIds))
 	for i := 0; i < len(CommentIds); i++ {
 		comment, userId, err := s.CommentRepo.GetCommentByCommentId(CommentIds[i])
-		User := s.UserRepo.GetUser(userId)
+		User, err := s.UserRepo.GetUserByUserId(userId)
+		comment.User = *User
 		Comments[i] = *comment
 		if err != nil {
 			*reply = model.CommentListResponse{

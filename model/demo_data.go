@@ -13,16 +13,6 @@ var DemoVideos = []Video{
 	},
 }
 
-var DemoComments = []Comment{
-	{
-		CommentId:   1,
-		UserId:      2,
-		VideoId:     1,
-		CommentText: "Test Comment",
-		CreateDate:  "05-01",
-	},
-}
-
 var DemoUser = User{
 	Id:            6,
 	Name:          "TestUser",
