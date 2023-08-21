@@ -31,10 +31,11 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 		}
 		return fmt.Errorf("user didn't uploaded")
 	}
-
+	var CommentId int64
+	CommentId = 0
 	// 数据库存入评论数据
 	if req.ActionType == 1 {
-		err = s.CommentRepo.AddComment(userId, req.VideoId, req.CommentId, req.CommentText)
+		CommentId, err = s.CommentRepo.AddComment(userId, req.VideoId, req.CommentText)
 		if err != nil {
 			*reply = model.CommentActionResponse{
 				Response: model.Response{
@@ -69,9 +70,9 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 		return nil
 	}
 
-	comment, _, _ := s.CommentRepo.GetCommentByCommentId(req.CommentId)
+	comment, _, _ := s.CommentRepo.GetCommentByCommentId(CommentId)
 
-	log.Println("CommentService add comment commentID:", req.CommentId)
+	log.Println("CommentService add comment commentID:", CommentId)
 
 	*reply = model.CommentActionResponse{
 		Response: model.Response{

@@ -9,7 +9,7 @@ import (
 )
 
 type CommentRepository interface {
-	AddComment(userID, videoID, commentID int64, comment_text string) error
+	AddComment(userID, videoID int64, comment_text string) (int64, error)
 	RemoveComment(userID, videoID, comment_id int64) error
 	GetCommentIdByVideoId(videoId int64) ([]int64, error)
 	GetCommentByCommentId(commentId int64) (*model.Comment, int64, error)
@@ -23,24 +23,27 @@ func NewMySQLCommentRepository() *MySQLCommentRepository {
 	return &MySQLCommentRepository{}
 }
 
-func (repo *MySQLCommentRepository) AddComment(userID, videoID, commentID int64, comment_text string) error {
+func (repo *MySQLCommentRepository) AddComment(userID, videoID int64, comment_text string) (int64, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 
 	//添加新评论
-
-	log.Println("CommentRepository add comment commentID:", commentID)
-
 	var err error = nil
 	sqlDateFormat := "2006-01-02"
 	current_time := time.Now().Format(sqlDateFormat)
 	query := "INSERT INTO comment (user_id, video_id, create_date, comment_text) VALUES (?, ?, ?, ?)"
-	_, err = dB.Exec(query, userID, videoID, current_time, comment_text)
+	result, err := dB.Exec(query, userID, videoID, current_time, comment_text)
 	if err != nil {
 		log.Println("添加评论失败:", err)
-		return err
+		return 0, err
 	}
-	return nil
+	// 获取插入数据的自增ID
+	commentID, err := result.LastInsertId()
+	if err != nil {
+		log.Println("获取插入数据的ID失败:", err)
+		return 0, err
+	}
+	return commentID, nil
 }
 
 func (repo *MySQLCommentRepository) RemoveComment(userID, videoID, comment_id int64) error {
