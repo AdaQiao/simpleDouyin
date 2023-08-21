@@ -56,6 +56,7 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 			}
 			return nil
 		}
+
 	}
 
 	//被评论视频评论数更新
@@ -70,6 +71,14 @@ func (s *CommentServiceImpl) Comment(req model.CommentActionRequest, reply *mode
 		return nil
 	}
 
+	if req.ActionType == 2 {
+		*reply = model.CommentActionResponse{
+			Response: model.Response{
+				StatusCode: 0,
+			},
+		}
+		return nil
+	}
 	comment, _, _ := s.CommentRepo.GetCommentByCommentId(CommentId)
 
 	log.Println("CommentService add comment commentID:", CommentId)
