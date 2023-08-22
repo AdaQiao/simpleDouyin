@@ -91,6 +91,7 @@ func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, re
 	accessKeySecret := os.Getenv("OSS_PASSWORD")
 	fmt.Println("id:", accessKeyID)
 	fmt.Println("pw:", accessKeySecret)
+	fmt.Println("sql", os.Getenv("MYSQL_HOST"))
 	endpoint := "oss-cn-beijing.aliyuncs.com"
 	bucketName := "simple-douyin"
 	// 创建 OSS 客户端实例
