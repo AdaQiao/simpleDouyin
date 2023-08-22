@@ -87,10 +87,13 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 }
 
 func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, reply *model.CoverAndVideoURL) error {
+	os.Setenv("OSS_ID", "LTAI5t7jPFXhiXgckbXHeWeR")
+	os.Setenv("OSS_PASSWORD", "imAsfE1B4MF7VZTcgH6puYngVm0IwN")
+
 	accessKeyID := os.Getenv("OSS_ID")
 	accessKeySecret := os.Getenv("OSS_PASSWORD")
-	fmt.Println("id:", accessKeyID)
-	fmt.Println("pw:", accessKeySecret)
+	fmt.Println("id:", os.Getenv("OSS_ID"))
+	fmt.Println("pw:", os.Getenv("OSS_PASSWORD"))
 	fmt.Println("sql", os.Getenv("MYSQL_HOST"))
 	endpoint := "oss-cn-beijing.aliyuncs.com"
 	bucketName := "simple-douyin"
