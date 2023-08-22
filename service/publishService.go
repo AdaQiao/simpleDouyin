@@ -89,6 +89,8 @@ func (s *PublishServiceImpl) PublishList(userIDToken model.UserIdToken, reply *m
 func (s *PublishServiceImpl) UploadVideoToOSS(file model.FilenameAndFilepath, reply *model.CoverAndVideoURL) error {
 	accessKeyID := os.Getenv("OSS_ID")
 	accessKeySecret := os.Getenv("OSS_PASSWORD")
+	fmt.Println(accessKeyID)
+	fmt.Println(accessKeySecret)
 	endpoint := "oss-cn-beijing.aliyuncs.com"
 	bucketName := "simple-douyin"
 	// 创建 OSS 客户端实例
