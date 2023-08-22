@@ -15,13 +15,13 @@ func NewMySQLDB() (*sql.DB, error) {
 
 	db, err := sql.Open("mysql", "root:tCzAhYFo@tcp("+host+":"+port+")/simpleDouyin")
 	if err != nil {
-		return nil, fmt.Errorf("连接数据库失败，原因是1024平台提供的mysql_HOST和mysql_PORT发生了改变，需要手动更新")
+		return nil, fmt.Errorf("连接数据库失败")
 	}
 
 	// 测试数据库连接
 	err = db.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("连接数据库失败，原因是1024平台提供的mysql_HOST和mysql_PORT发生了改变，需要手动更新")
+		return nil, fmt.Errorf("连接数据库失败")
 	}
 
 	fmt.Println("MySQL数据库连接成功")
