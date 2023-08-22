@@ -72,7 +72,7 @@ func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginR
 			Token:    token,
 		}
 	} else {
-		log.Println(err)
+		log.Println("service:", err)
 		*reply = model.UserLoginResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}

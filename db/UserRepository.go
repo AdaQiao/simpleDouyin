@@ -49,6 +49,7 @@ func (repo *MySQLUserRepository) GetUserByToken(token string) (*model.User, erro
 	user := &model.User{}
 	err := row.Scan(&user.Id, &user.Name, &user.FollowCount, &user.FollowerCount, &user.IsFollow, &user.TotalFavorited, &user.WorkCount, &user.FavoriteCount, &user.Avatar)
 	if err != nil {
+		log.Println("repository:", err)
 		if err == sql.ErrNoRows {
 			// 用户不存在
 			fmt.Println("用户不存在:", token)
