@@ -2,10 +2,11 @@ package service
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/AdaQiao/simpleDouyin/controller"
 	"github.com/AdaQiao/simpleDouyin/db"
 	"github.com/AdaQiao/simpleDouyin/model"
-	"strings"
 
 	"log"
 	"net"
@@ -71,6 +72,7 @@ func (s *UserServiceImpl) Login(user model.UserPassword, reply *model.UserLoginR
 			Token:    token,
 		}
 	} else {
+		log.Println(err)
 		*reply = model.UserLoginResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		}
