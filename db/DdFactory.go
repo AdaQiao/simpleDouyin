@@ -12,8 +12,10 @@ func NewMySQLDB() (*sql.DB, error) {
 	// 设置数据库连接参数
 	host := os.Getenv("MYSQL_HOST")
 	port := os.Getenv("MYSQL_PORT")
+	password := os.Getenv("MYSQL_PASSWORD")
+	user := os.Getenv("MYSQL_USER")
 
-	db, err := sql.Open("mysql", "root:tCzAhYFo@tcp("+host+":"+port+")/simpleDouyin")
+	db, err := sql.Open("mysql", ""+user+":"+password+"@tcp("+host+":"+port+")/simpleDouyin")
 	if err != nil {
 		return nil, fmt.Errorf("连接数据库失败")
 	}
