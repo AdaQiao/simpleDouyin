@@ -1,11 +1,10 @@
 package main
 
 import (
-	"log"
-
 	"github.com/AdaQiao/simpleDouyin/db"
 	"github.com/AdaQiao/simpleDouyin/service"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func main() {
