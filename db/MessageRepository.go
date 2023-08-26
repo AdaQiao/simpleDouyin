@@ -8,9 +8,8 @@ import (
 )
 
 type MessageRepository interface {
-	AddMessage(userID, videoID int64) error
-	GetMessageByFromId(userId int64) ([]int64, error)
-	GetMessageByToId(userId int64) ([]int64, error)
+	AddMessage(fromID, toID int64, content string) (int64, error)
+	GetMessageByUserId(userId int64) ([]int64, error)
 }
 
 type MySQLMessageRepository struct {
@@ -27,14 +26,14 @@ func (repo *MySQLMessageRepository) AddMessage(fromID, toID int64, content strin
 	//添加新消息
 	var err error = nil
 	sqlDateFormat := "2006-01-02"
-	current_time := time.Now().Format(sqlDateFormat)
+	currentTime := time.Now().Format(sqlDateFormat)
 
 	// 生成一个随机的 64 位整数作为id
 	rand.Seed(time.Now().UnixNano())
 	var id = rand.Int63()
 	//插入数据库
-	query := "INSERT INTO message (id, message, create_date,fromID,toID) VALUES (?, ?, ?, ?, ?)"
-	result, err := dB.Exec(query, id, content, current_time, fromID, toID)
+	query := "INSERT INTO message (id, message, create_date,from_user_id ,to_user_id) VALUES (?, ?, ?, ?, ?)"
+	result, err := dB.Exec(query, id, content, currentTime, fromID, toID)
 	if err != nil {
 		log.Println("添加消息失败:", err)
 		return 0, err
@@ -48,10 +47,9 @@ func (repo *MySQLMessageRepository) AddMessage(fromID, toID int64, content strin
 	return commentID, nil
 }
 
-func (repo *MySQLMessageRepository) GetMessageByFromId(userId int64) ([]int64, error) {
+func (repo *MySQLMessageRepository) GetMessageByUserId(userId int64) ([]int64, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-
 	// 执行查询消息的SQL语句
 	query := `
 		SELECT id FROM message WHERE from_user_id = ? OR to_user_id = ?
@@ -75,6 +73,11 @@ func (repo *MySQLMessageRepository) GetMessageByFromId(userId int64) ([]int64, e
 
 	if err := rows.Err(); err != nil {
 		log.Println("遍历消息列表失败:", err)
+		return nil, err
+	}
+
+	err = rows.Close()
+	if err != nil {
 		return nil, err
 	}
 	return messageIds, nil
