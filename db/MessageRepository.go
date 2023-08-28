@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/AdaQiao/simpleDouyin/model"
 	"log"
 	"math/rand"
 	"sync"
@@ -10,6 +11,7 @@ import (
 type MessageRepository interface {
 	AddMessage(fromID, toID int64, content string) (int64, error)
 	GetMessageByUserId(userId int64) ([]int64, error)
+	GetMessageById(Id int64) (*model.Message, error)
 }
 
 type MySQLMessageRepository struct {
@@ -32,7 +34,7 @@ func (repo *MySQLMessageRepository) AddMessage(fromID, toID int64, content strin
 	rand.Seed(time.Now().UnixNano())
 	var id = rand.Int63()
 	//插入数据库
-	query := "INSERT INTO message (id, message, create_date,from_user_id ,to_user_id) VALUES (?, ?, ?, ?, ?)"
+	query := "INSERT INTO message (id, msg_content, create_date,from_user_id ,to_user_id) VALUES (?, ?, ?, ?, ?)"
 	result, err := dB.Exec(query, id, content, currentTime, fromID, toID)
 	if err != nil {
 		log.Println("添加消息失败:", err)
@@ -81,4 +83,35 @@ func (repo *MySQLMessageRepository) GetMessageByUserId(userId int64) ([]int64, e
 		return nil, err
 	}
 	return messageIds, nil
+}
+
+func (repo *MySQLMessageRepository) GetMessageById(Id int64) (*model.Message, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+	// 执行查找评论数据的SQL语句
+	query := "SELECT id, msg_content, create_time, user_id,to_user_id FROM Message WHERE id = ?"
+	var message model.Message
+	rows, err := dB.Query(query, Id)
+	if err != nil {
+		log.Println("查询评论失败：", err)
+		return nil, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		err = rows.Scan(
+			&message.Id,
+			&message.Content,
+			&message.CreateTime,
+			&message.FromUserId,
+			&message.ToUserId,
+		)
+		if err != nil {
+			log.Println("扫描评论失败:", err)
+			return nil, err
+		}
+	} else {
+		log.Println("未找到匹配的评论")
+		return nil, nil
+	}
+	return &message, err
 }
