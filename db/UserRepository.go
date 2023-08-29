@@ -15,6 +15,8 @@ type UserRepository interface {
 	UpdateWorkCount(token string) error
 	UpdateFavoriteCount(token string, mode int32) error
 	UpdateTotalFavorited(userId int64, mode int32) error
+	UpdateFollowCount(userId int64, mode int32) error
+	UpdateFollowerCount(userId int64, mode int32) error
 }
 
 type MySQLUserRepository struct {
@@ -155,5 +157,44 @@ func (repo *MySQLUserRepository) UpdateTotalFavorited(userId int64, mode int32) 
 		return err
 	}
 
+	return nil
+}
+
+func (repo *MySQLUserRepository) UpdateFollowCount(userId int64, mode int32) error {
+	query := "SELECT follow_count FROM users WHERE id = ?"
+	row := dB.QueryRow(query, userId)
+	var followCount int64
+	err := row.Scan(&followCount)
+	// 更新 favorite_count
+	if mode == 1 {
+		followCount++
+	} else {
+		followCount--
+	}
+	query = "UPDATE users SET follow_count = ? WHERE id = ?"
+	_, err = dB.Exec(query, followCount, userId)
+	if err != nil {
+		log.Println("更新用户 follow_count 失败:", err)
+		return err
+	}
+	return nil
+}
+func (repo *MySQLUserRepository) UpdateFollowerCount(userId int64, mode int32) error {
+	query := "SELECT follower_count FROM users WHERE id = ?"
+	row := dB.QueryRow(query, userId)
+	var followerCount int64
+	err := row.Scan(&followerCount)
+	// 更新 favorite_count
+	if mode == 1 {
+		followerCount++
+	} else {
+		followerCount--
+	}
+	query = "UPDATE users SET follower_count = ? WHERE id = ?"
+	_, err = dB.Exec(query, followerCount, userId)
+	if err != nil {
+		log.Println("更新用户 follow_count 失败:", err)
+		return err
+	}
 	return nil
 }
