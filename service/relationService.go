@@ -40,6 +40,22 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 			}
 			return nil
 		}
+		err = s.UserRepo.UpdateFollowCount(userId, 1)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+		err = s.UserRepo.UpdateFollowerCount(toUserId, 1)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
 	} else if req.ActionType == 2 {
 		err = s.RelationRepo.RemoveFollow(userId, toUserId)
 		if err != nil {
@@ -50,6 +66,22 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 			return nil
 		}
 		err = s.RelationRepo.RemoveFan(toUserId, userId)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+		err = s.UserRepo.UpdateFollowCount(userId, 2)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+		err = s.UserRepo.UpdateFollowerCount(toUserId, 2)
 		if err != nil {
 			*reply = model.Response{
 				StatusCode: 1,
