@@ -11,10 +11,57 @@ import (
 
 type RelationService interface {
 	FollowAction(req model.FollowActionMessage, reply *model.Response) error
-	FollowList(userIDToken model.UserIdToken, reply *model.VideoListResponse) error
 }
 
-func (s *FavoriteServiceImpl) FollowAction(req model.FollowActionMessage, reply *model.Response) error {
+func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply *model.Response) error {
+	userId, err := s.UserRepo.GetUserId(req.Token)
+	if err != nil {
+		*reply = model.Response{
+			StatusCode: 1,
+			StatusMsg:  "user didn't exist",
+		}
+		return fmt.Errorf("user didn't uploaded")
+	}
+	toUserId := req.ToUserId
+	if req.ActionType == 1 {
+		err = s.RelationRepo.AddFollow(userId, toUserId)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+		err = s.RelationRepo.AddFan(toUserId, userId)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+	} else if req.ActionType == 2 {
+		err = s.RelationRepo.RemoveFollow(userId, toUserId)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+		err = s.RelationRepo.RemoveFan(toUserId, userId)
+		if err != nil {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			}
+			return nil
+		}
+	}
+	*reply = model.Response{
+		StatusCode: 0,
+		StatusMsg:  "Relation Action success",
+	}
 	return nil
 }
 
@@ -22,6 +69,7 @@ type RelationServiceImpl struct {
 	UserRepo     *db.MySQLUserRepository
 	VideoRepo    *db.MySQLVideoRepository
 	FavoriteRepo *db.MySQLFavoriteRepository
+	RelationRepo *db.MySQLRelationRepository
 }
 
 func RunRelationServer() {
@@ -30,6 +78,7 @@ func RunRelationServer() {
 		UserRepo:     db.NewMySQLUserRepository(),
 		VideoRepo:    db.NewMySQLVideoRepository(),
 		FavoriteRepo: db.NewMySQLFavoriteRepository(),
+		RelationRepo: db.NewMySQLRelationRepository(),
 	}
 
 	// 注册RPC服务
