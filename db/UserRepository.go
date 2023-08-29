@@ -168,7 +168,7 @@ func (repo *MySQLUserRepository) UpdateFollowCount(userId int64, mode int32) err
 	// 更新 follow_count
 	if mode == 1 {
 		followCount++
-	} else {
+	} else if mode == 2 {
 		followCount--
 	}
 	query = "UPDATE users SET follow_count = ? WHERE id = ?"
@@ -187,13 +187,13 @@ func (repo *MySQLUserRepository) UpdateFollowerCount(userId int64, mode int32) e
 	// 更新 follower_count
 	if mode == 1 {
 		followerCount++
-	} else {
+	} else if mode == 2 {
 		followerCount--
 	}
 	query = "UPDATE users SET follower_count = ? WHERE id = ?"
 	_, err = dB.Exec(query, followerCount, userId)
 	if err != nil {
-		log.Println("更新用户 follow_count 失败:", err)
+		log.Println("更新用户 follower_count 失败:", err)
 		return err
 	}
 	return nil
