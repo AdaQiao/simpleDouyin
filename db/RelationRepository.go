@@ -120,7 +120,7 @@ func (repo *MySQLRelationRepository) RemoveFollow(userId int64, followId int64) 
 }
 
 func (repo *MySQLRelationRepository) CheckFollow(userId, followId int64) (bool, error) {
-	query := "SELECT is_follow FROM follow WHERE user_id = ? AND follow_id = ?"
+	query := "SELECT is_following FROM follow WHERE user_id = ? AND follow_id = ?"
 	row := dB.QueryRow(query, userId, followId)
 	var isFollow bool
 	err := row.Scan(&isFollow)
