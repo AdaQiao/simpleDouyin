@@ -50,13 +50,12 @@ func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.F
 			}
 			videos[i].IsFavorite = isLike
 			//查询关注状态
-			isFollow, err := s.RelationRepo.CheckFollow(userId, videos[i].Id)
+			isFollow, err := s.RelationRepo.CheckFollow(userId, videos[i].Author.Id)
 			if err != nil {
 				fmt.Println("查询是否关注失败:", err)
 			}
 			videos[i].Author.IsFollow = isFollow
 			fmt.Println("isFollow:", isFollow)
-			videos[i].Author.IsFollow = false
 		}
 	}
 	*reply = model.FeedResponse{
