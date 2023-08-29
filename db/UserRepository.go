@@ -165,7 +165,7 @@ func (repo *MySQLUserRepository) UpdateFollowCount(userId int64, mode int32) err
 	row := dB.QueryRow(query, userId)
 	var followCount int64
 	err := row.Scan(&followCount)
-	// 更新 favorite_count
+	// 更新 follow_count
 	if mode == 1 {
 		followCount++
 	} else {
@@ -184,7 +184,7 @@ func (repo *MySQLUserRepository) UpdateFollowerCount(userId int64, mode int32) e
 	row := dB.QueryRow(query, userId)
 	var followerCount int64
 	err := row.Scan(&followerCount)
-	// 更新 favorite_count
+	// 更新 follower_count
 	if mode == 1 {
 		followerCount++
 	} else {
