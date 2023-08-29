@@ -30,7 +30,7 @@ func RelationAction(c *gin.Context) {
 	}
 	// 调用远程登录方法
 	var reply model.Response
-	err = client.Call("RelationServiceImpl.FavoriteVideo", mes, &reply)
+	err = client.Call("RelationServiceImpl.FollowAction", mes, &reply)
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
