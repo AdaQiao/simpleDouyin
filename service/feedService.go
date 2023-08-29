@@ -55,6 +55,8 @@ func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.F
 				fmt.Println("查询是否关注失败:", err)
 			}
 			videos[i].Author.IsFollow = isFollow
+			fmt.Println("isFollow:", isFollow)
+			videos[i].Author.IsFollow = false
 		}
 	}
 	*reply = model.FeedResponse{
