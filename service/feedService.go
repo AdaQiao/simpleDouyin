@@ -19,6 +19,7 @@ type FeedServiceImpl struct {
 	UserRepo     *db.MySQLUserRepository
 	VideoRepo    *db.MySQLVideoRepository
 	FavoriteRepo *db.MySQLFavoriteRepository
+	RelationRepo *db.MySQLRelationRepository
 }
 
 func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.FeedResponse) error {
@@ -35,18 +36,25 @@ func (s *FeedServiceImpl) GetVideoList(feedReq model.FeedRequest, reply *model.F
 		user, _ := s.UserRepo.GetUserByToken(tokens[i])
 		videos[i].Author = *user
 	}
-	//如果用户已登录，查询点赞状态
+	//如果用户已登录，查询点赞及关注状态
 	if feedReq.Token != "" {
 		userId, err := s.UserRepo.GetUserId(feedReq.Token)
 		if err != nil {
 			fmt.Println("查询用户id失败:", err)
 		}
 		for i := 0; i < len(videos); i++ {
+			//查询点赞状态
 			isLike, err := s.FavoriteRepo.CheckFavorite(userId, videos[i].Id)
 			if err != nil {
 				fmt.Println("查询是否点赞失败:", err)
 			}
 			videos[i].IsFavorite = isLike
+			//查询关注状态
+			isFollow, err := s.RelationRepo.CheckFollow(userId, videos[i].Id)
+			if err != nil {
+				fmt.Println("查询是否关注失败:", err)
+			}
+			videos[i].Author.IsFollow = isFollow
 		}
 	}
 	*reply = model.FeedResponse{

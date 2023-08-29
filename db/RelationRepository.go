@@ -12,6 +12,7 @@ type RelationRepository interface {
 	RemoveFan(userId int64, fanId int64) error
 	AddFollow(userId int64, followId int64) error
 	RemoveFollow(userId int64, followId int64) error
+	CheckFollow(userId, followId int64) (bool, error)
 }
 
 type MySQLRelationRepository struct {
@@ -116,4 +117,24 @@ func (repo *MySQLRelationRepository) RemoveFollow(userId int64, followId int64) 
 		return err
 	}
 	return nil
+}
+
+func (repo *MySQLRelationRepository) CheckFollow(userId, followId int64) (bool, error) {
+	query := "SELECT is_follow FROM follow WHERE user_id = ? AND follow_id = ?"
+	row := dB.QueryRow(query, userId, followId)
+	var isFollow bool
+	err := row.Scan(&isFollow)
+	if err == sql.ErrNoRows {
+		// 不存在记录，没有关注
+		return false, nil
+	} else if err != nil {
+		log.Println("查询关注记录失败:", err)
+		return false, err
+	} else {
+		if isFollow == true {
+			return true, nil
+		}
+		// 已取消关注
+		return false, nil
+	}
 }
