@@ -27,8 +27,8 @@ func (repo *MySQLRelationRepository) AddFan(userId int64, fanId int64) error {
 	defer repo.mutex.Unlock()
 
 	// 检查是否已存在相同的记录
-	query := "SELECT is_fan FROM fan WHERE user_id = ?"
-	row := dB.QueryRow(query, userId)
+	query := "SELECT is_fan FROM fan WHERE user_id = ? and fan_id = ?"
+	row := dB.QueryRow(query, userId, fanId)
 	var isFan bool
 	err := row.Scan(&isFan)
 	if err == sql.ErrNoRows {
@@ -75,8 +75,8 @@ func (repo *MySQLRelationRepository) AddFollow(userId int64, followId int64) err
 	defer repo.mutex.Unlock()
 
 	// 检查是否已存在相同的记录
-	query := "SELECT is_following FROM follow WHERE user_id = ?"
-	row := dB.QueryRow(query, userId)
+	query := "SELECT is_following FROM follow WHERE user_id = ? and follow_id = ?"
+	row := dB.QueryRow(query, userId, followId)
 	var isFollow bool
 	err := row.Scan(&isFollow)
 	if err == sql.ErrNoRows {
