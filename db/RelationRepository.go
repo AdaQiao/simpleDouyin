@@ -81,7 +81,7 @@ func (repo *MySQLRelationRepository) AddFollow(userId int64, followId int64) err
 	err := row.Scan(&isFollow)
 	if err == sql.ErrNoRows {
 		// 不存在记录，插入新记录
-		query = "INSERT INTO fan (user_id, follow_id, is_following) VALUES (?, ?, true)"
+		query = "INSERT INTO follow (user_id, follow_id, is_following) VALUES (?, ?, true)"
 		_, err = dB.Exec(query, userId, followId)
 		if err != nil {
 			log.Println("插入关注记录失败:", err)
