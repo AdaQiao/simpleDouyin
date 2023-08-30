@@ -13,6 +13,9 @@ type RelationRepository interface {
 	AddFollow(userId int64, followId int64) error
 	RemoveFollow(userId int64, followId int64) error
 	CheckFollow(userId, followId int64) (bool, error)
+	GetFollowById(userId int64) ([]int64, error)
+	GetFanById(userId int64) ([]int64, error)
+	GetFriendById(userId int64) ([]int64, error)
 }
 
 type MySQLRelationRepository struct {
@@ -137,4 +140,14 @@ func (repo *MySQLRelationRepository) CheckFollow(userId, followId int64) (bool, 
 		// 已取消关注
 		return false, nil
 	}
+}
+
+func (repo *MySQLRelationRepository) GetFollowById(userId int64) ([]int64, error) {
+	return nil, nil
+}
+func (repo *MySQLRelationRepository) GetFanById(userId int64) ([]int64, error) {
+	return nil, nil
+}
+func (repo *MySQLRelationRepository) GetFriendById(userId int64) ([]int64, error) {
+	return nil, nil
 }
