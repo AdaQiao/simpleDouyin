@@ -35,7 +35,7 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 			}
 			return nil
 		}
-		err = s.RelationRepo.AddFan(toUserId, userId)
+		err = s.RelationRepo.AddFollower(toUserId, userId)
 		if err != nil {
 			*reply = model.Response{
 				StatusCode: 1,
@@ -68,7 +68,7 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 			}
 			return nil
 		}
-		err = s.RelationRepo.RemoveFan(toUserId, userId)
+		err = s.RelationRepo.RemoveFollower(toUserId, userId)
 		if err != nil {
 			*reply = model.Response{
 				StatusCode: 1,
