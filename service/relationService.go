@@ -257,6 +257,7 @@ func (s *RelationServiceImpl) FriendList(req model.RelationListMessage, reply *m
 			return nil
 		}
 		if isFollow {
+			tempUser.IsFollow = true
 			userList = append(userList, *tempUser)
 		}
 

@@ -97,10 +97,5 @@ func FriendList(c *gin.Context) {
 	if err != nil {
 		log.Fatal("调用远程注册方法失败：", err)
 	}
-	c.JSON(http.StatusOK, model.UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []model.User{model.DemoUser},
-	})
+	c.JSON(http.StatusOK, reply)
 }
