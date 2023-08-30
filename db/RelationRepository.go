@@ -143,13 +143,53 @@ func (repo *MySQLRelationRepository) CheckFollow(userId, followId int64) (bool, 
 }
 
 func (repo *MySQLRelationRepository) GetFollowById(userId int64) ([]int64, error) {
-
-	return nil, nil
+	query := "SELECT follow_id FROM follow WHERE user_id = ? AND is_following = true"
+	rows, err := dB.Query(query, userId)
+	if err != nil {
+		log.Println("查询关注列表失败:", err)
+		return nil, err
+	}
+	var followIds []int64
+	for rows.Next() {
+		var followId int64
+		err := rows.Scan(&followId)
+		if err != nil {
+			log.Println("扫描关注数据失败:", err)
+			return nil, err
+		}
+		followIds = append(followIds, followId)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println("遍历关注结果失败:", err)
+		return nil, err
+	}
+	return followIds, nil
 }
+
 func (repo *MySQLRelationRepository) GetFollowerById(userId int64) ([]int64, error) {
-
-	return nil, nil
+	query := "SELECT follower_id FROM follower WHERE user_id = ? AND is_following = true"
+	rows, err := dB.Query(query, userId)
+	if err != nil {
+		log.Println("查询粉丝列表失败:", err)
+		return nil, err
+	}
+	var followerIds []int64
+	for rows.Next() {
+		var followerId int64
+		err := rows.Scan(&followerId)
+		if err != nil {
+			log.Println("扫描粉丝数据失败:", err)
+			return nil, err
+		}
+		followerIds = append(followerIds, followerId)
+	}
+	if err = rows.Err(); err != nil {
+		log.Println("遍历粉丝结果失败:", err)
+		return nil, err
+	}
+	return followerIds, nil
 }
+
 func (repo *MySQLRelationRepository) GetFriendById(userId int64) ([]int64, error) {
 
 	return nil, nil
