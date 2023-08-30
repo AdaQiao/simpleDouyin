@@ -11,6 +11,9 @@ import (
 
 type RelationService interface {
 	FollowAction(req model.FollowActionMessage, reply *model.Response) error
+	FollowList(req model.RelationListMessage, reply *model.UserListResponse) error
+	FollowerList(req model.RelationListMessage, reply *model.UserListResponse) error
+	FriendList(req model.RelationListMessage, reply *model.UserListResponse) error
 }
 
 func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply *model.Response) error {
@@ -94,6 +97,16 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 		StatusCode: 0,
 		StatusMsg:  "Relation Action success",
 	}
+	return nil
+}
+
+func (s *RelationServiceImpl) FollowList(req model.RelationListMessage, reply *model.UserListResponse) error {
+	return nil
+}
+func (s *RelationServiceImpl) FollowerList(req model.RelationListMessage, reply *model.UserListResponse) error {
+	return nil
+}
+func (s *RelationServiceImpl) FriendList(req model.RelationListMessage, reply *model.UserListResponse) error {
 	return nil
 }
 

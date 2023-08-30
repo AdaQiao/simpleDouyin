@@ -39,26 +39,64 @@ func RelationAction(c *gin.Context) {
 
 // FollowList all users have same follow list
 func FollowList(c *gin.Context) {
-	c.JSON(http.StatusOK, model.UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []model.User{model.DemoUser},
-	})
+	token := c.Query("token")
+	UserId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	mes := model.RelationListMessage{
+		Token:  token,
+		UserId: UserId,
+	}
+	client, err := rpc.Dial("tcp", "127.0.0.1:9096")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
+	}
+	// 调用远程登录方法
+	var reply model.UserListResponse
+	err = client.Call("RelationServiceImpl.FollowList", mes, &reply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
 }
 
 // FollowerList all users have same follower list
 func FollowerList(c *gin.Context) {
-	c.JSON(http.StatusOK, model.UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []model.User{model.DemoUser},
-	})
+	token := c.Query("token")
+	UserId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	mes := model.RelationListMessage{
+		Token:  token,
+		UserId: UserId,
+	}
+	client, err := rpc.Dial("tcp", "127.0.0.1:9096")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
+	}
+	// 调用远程登录方法
+	var reply model.UserListResponse
+	err = client.Call("RelationServiceImpl.FollowerList", mes, &reply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
+	c.JSON(http.StatusOK, reply)
 }
 
 // FriendList all users have same friend list
 func FriendList(c *gin.Context) {
+	token := c.Query("token")
+	UserId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	mes := model.RelationListMessage{
+		Token:  token,
+		UserId: UserId,
+	}
+	client, err := rpc.Dial("tcp", "127.0.0.1:9096")
+	if err != nil {
+		log.Fatal("RPC连接失败：", err)
+	}
+	// 调用远程登录方法
+	var reply model.UserListResponse
+	err = client.Call("RelationServiceImpl.FriendList", mes, &reply)
+	if err != nil {
+		log.Fatal("调用远程注册方法失败：", err)
+	}
 	c.JSON(http.StatusOK, model.UserListResponse{
 		Response: model.Response{
 			StatusCode: 0,
