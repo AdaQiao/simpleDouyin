@@ -8,13 +8,13 @@ import (
 )
 
 type RelationRepository interface {
-	AddFan(userId int64, fanId int64) error
-	RemoveFan(userId int64, fanId int64) error
+	AddFollower(userId int64, followerId int64) error
+	RemoveFollower(userId int64, followerId int64) error
 	AddFollow(userId int64, followId int64) error
 	RemoveFollow(userId int64, followId int64) error
 	CheckFollow(userId, followId int64) (bool, error)
 	GetFollowById(userId int64) ([]int64, error)
-	GetFanById(userId int64) ([]int64, error)
+	GetFollowerById(userId int64) ([]int64, error)
 	GetFriendById(userId int64) ([]int64, error)
 }
 
@@ -26,19 +26,19 @@ func NewMySQLRelationRepository() *MySQLRelationRepository {
 	return &MySQLRelationRepository{}
 }
 
-func (repo *MySQLRelationRepository) AddFan(userId int64, fanId int64) error {
+func (repo *MySQLRelationRepository) AddFollower(userId int64, followerId int64) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 
 	// 检查是否已存在相同的记录
-	query := "SELECT is_fan FROM fan WHERE user_id = ? and fan_id = ?"
-	row := dB.QueryRow(query, userId, fanId)
+	query := "SELECT is_following FROM follow WHERE user_id = ? and follower_id = ?"
+	row := dB.QueryRow(query, userId, followerId)
 	var isFan bool
 	err := row.Scan(&isFan)
 	if err == sql.ErrNoRows {
 		// 不存在记录，插入新记录
-		query = "INSERT INTO fan (user_id, fan_id, is_fan) VALUES (?, ?, true)"
-		_, err = dB.Exec(query, userId, fanId)
+		query = "INSERT INTO fan (user_id, follower_id, is_following) VALUES (?, ?, true)"
+		_, err = dB.Exec(query, userId, followerId)
 		if err != nil {
 			log.Println("插入粉丝记录失败:", err)
 			return err
@@ -52,7 +52,7 @@ func (repo *MySQLRelationRepository) AddFan(userId int64, fanId int64) error {
 		}
 		// 已取关，重新关注
 		query = "UPDATE fan SET is_fan = true WHERE user_id = ? AND fan_id = ?"
-		_, err = dB.Exec(query, userId, fanId)
+		_, err = dB.Exec(query, userId, followerId)
 		if err != nil {
 			log.Println("增加粉丝记录失败:", err)
 			return err
@@ -61,12 +61,12 @@ func (repo *MySQLRelationRepository) AddFan(userId int64, fanId int64) error {
 	return nil
 }
 
-func (repo *MySQLRelationRepository) RemoveFan(userId int64, fanId int64) error {
+func (repo *MySQLRelationRepository) RemoveFollower(userId int64, followerId int64) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	// 更新is_fan为0
 	query := "UPDATE fan SET is_fan = false WHERE user_id = ? AND fan_id = ?"
-	_, err := dB.Exec(query, userId, fanId)
+	_, err := dB.Exec(query, userId, followerId)
 	if err != nil {
 		log.Println("移除粉丝记录失败:", err)
 		return err
@@ -143,11 +143,14 @@ func (repo *MySQLRelationRepository) CheckFollow(userId, followId int64) (bool, 
 }
 
 func (repo *MySQLRelationRepository) GetFollowById(userId int64) ([]int64, error) {
+
 	return nil, nil
 }
-func (repo *MySQLRelationRepository) GetFanById(userId int64) ([]int64, error) {
+func (repo *MySQLRelationRepository) GetFollowerById(userId int64) ([]int64, error) {
+
 	return nil, nil
 }
 func (repo *MySQLRelationRepository) GetFriendById(userId int64) ([]int64, error) {
+
 	return nil, nil
 }
