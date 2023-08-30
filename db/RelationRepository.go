@@ -30,7 +30,7 @@ func (repo *MySQLRelationRepository) AddFollower(userId int64, followerId int64)
 	defer repo.mutex.Unlock()
 
 	// 检查是否已存在相同的记录
-	query := "SELECT is_following FROM follow WHERE user_id = ? and follower_id = ?"
+	query := "SELECT is_following FROM follower WHERE user_id = ? and follower_id = ?"
 	row := dB.QueryRow(query, userId, followerId)
 	var isFollowing bool
 	err := row.Scan(&isFollowing)
