@@ -15,7 +15,6 @@ type RelationRepository interface {
 	CheckFollow(userId, followId int64) (bool, error)
 	GetFollowById(userId int64) ([]int64, error)
 	GetFollowerById(userId int64) ([]int64, error)
-	GetFriendById(userId int64) ([]int64, error)
 }
 
 type MySQLRelationRepository struct {
@@ -188,9 +187,4 @@ func (repo *MySQLRelationRepository) GetFollowerById(userId int64) ([]int64, err
 		return nil, err
 	}
 	return followerIds, nil
-}
-
-func (repo *MySQLRelationRepository) GetFriendById(userId int64) ([]int64, error) {
-
-	return nil, nil
 }
