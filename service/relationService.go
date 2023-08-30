@@ -27,6 +27,14 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 	}
 	toUserId := req.ToUserId
 	if req.ActionType == 1 {
+		isFollow, err := s.RelationRepo.CheckFollow(userId, toUserId)
+		if isFollow {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  "Already followed",
+			}
+			return nil
+		}
 		err = s.RelationRepo.AddFollow(userId, toUserId)
 		if err != nil {
 			*reply = model.Response{
@@ -60,6 +68,14 @@ func (s *RelationServiceImpl) FollowAction(req model.FollowActionMessage, reply 
 			return nil
 		}
 	} else if req.ActionType == 2 {
+		isFollow, err := s.RelationRepo.CheckFollow(userId, toUserId)
+		if !isFollow {
+			*reply = model.Response{
+				StatusCode: 1,
+				StatusMsg:  "you haven't follow this user",
+			}
+			return nil
+		}
 		err = s.RelationRepo.RemoveFollow(userId, toUserId)
 		if err != nil {
 			*reply = model.Response{
