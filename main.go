@@ -19,6 +19,7 @@ func main() {
 	go service.RunUserServer()
 	go service.RunFavoriteServer()
 	go service.RunCommentServer()
+	go service.RunRelationServer()
 	r := gin.Default()
 
 	initRouter(r)
