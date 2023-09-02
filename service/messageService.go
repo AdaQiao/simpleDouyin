@@ -3,14 +3,15 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/AdaQiao/simpleDouyin/db"
 	"github.com/AdaQiao/simpleDouyin/model"
-
 	"io"
 	"net"
 	"sync"
 )
 
 var chatConnMap = sync.Map{}
+var repo = db.NewMySQLMessageRepository()
 
 func RunMessageServer() {
 	listen, err := net.Listen("tcp", "127.0.0.1:9090")
@@ -73,4 +74,17 @@ func process(conn net.Conn) {
 		}
 		//test git
 	}
+}
+
+func GetAllChat(FromUserId int64, ToUserId int64) ([]model.Message, error) {
+
+	res, err := repo.GetMessagesBetweenUsers(FromUserId, ToUserId)
+	if err == nil {
+		fmt.Printf("Getting chat history success!")
+		return res, nil
+	} else {
+		fmt.Printf("Error getting chat history: %v\n", err)
+		return nil, err
+	}
+
 }

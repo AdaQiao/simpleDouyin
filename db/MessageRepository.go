@@ -12,6 +12,7 @@ type MessageRepository interface {
 	AddMessage(fromID, toID int64, content string) (int64, error)
 	GetMessageByUserId(userId int64) ([]int64, error)
 	GetMessageById(Id int64) (*model.Message, error)
+	GetMessagesBetweenUsers(userId1, userId2 int64) ([]model.Message, error)
 }
 
 type MySQLMessageRepository struct {
@@ -29,7 +30,7 @@ func (repo *MySQLMessageRepository) AddMessage(fromID, toID int64, content strin
 	var err error = nil
 	sqlDateFormat := "2006-01-02"
 	currentTime := time.Now().Format(sqlDateFormat)
-
+	// 应该用message里的id
 	// 生成一个随机的 64 位整数作为id
 	rand.Seed(time.Now().UnixNano())
 	var id = rand.Int63()
@@ -57,7 +58,7 @@ func (repo *MySQLMessageRepository) GetMessageByUserId(userId int64) ([]int64, e
 		SELECT id FROM message WHERE from_user_id = ? OR to_user_id = ?
 		ORDER BY create_date DESC
 	`
-	rows, err := dB.Query(query, userId)
+	rows, err := dB.Query(query, userId, userId)
 	if err != nil {
 		log.Println("获取消息列表失败:", err)
 		return nil, err
@@ -114,4 +115,37 @@ func (repo *MySQLMessageRepository) GetMessageById(Id int64) (*model.Message, er
 		return nil, nil
 	}
 	return &message, err
+}
+
+func (repo *MySQLMessageRepository) GetMessagesBetweenUsers(userId1, userId2 int64) ([]model.Message, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+	// 执行查找评论数据的SQL语句
+	query := "SELECT id, content, create_time, from_user_id, to_user_id FROM Message WHERE (from_user_id = ? AND to_user_id = ?) OR (from_user_id = ? AND to_user_id = ?)  ORDER BY create_time ASC"
+	var messages []model.Message
+	rows, err := dB.Query(query, userId1, userId2, userId2, userId1)
+	if err != nil {
+		log.Println("查询评论失败：", err)
+		return nil, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		var message model.Message
+		err = rows.Scan(
+			&message.Id,
+			&message.Content,
+			&message.CreateTime,
+			&message.FromUserId,
+			&message.ToUserId,
+		)
+		if err != nil {
+			log.Println("扫描评论失败:", err)
+			return nil, err
+		}
+		messages = append(messages, message)
+	} else {
+		log.Println("未找到匹配的评论")
+		return nil, nil
+	}
+	return messages, err
 }

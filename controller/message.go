@@ -3,7 +3,9 @@ package controller
 import (
 	"fmt"
 	"github.com/AdaQiao/simpleDouyin/model"
+	"github.com/AdaQiao/simpleDouyin/service"
 	"github.com/gin-gonic/gin"
+
 	"net/http"
 	"strconv"
 	"sync/atomic"
@@ -12,7 +14,7 @@ import (
 
 var tempChat = map[string][]model.Message{}
 
-var messageIdSequence = int64(1)
+var MessageIdSequence = int64(1)
 
 type ChatResponse struct {
 	model.Response
@@ -29,9 +31,9 @@ func MessageAction(c *gin.Context) {
 		userIdB, _ := strconv.Atoi(toUserId)
 		chatKey := genChatKey(user.Id, int64(userIdB))
 
-		atomic.AddInt64(&messageIdSequence, 1)
+		atomic.AddInt64(&MessageIdSequence, 1)
 		curMessage := model.Message{
-			Id:         messageIdSequence,
+			Id:         MessageIdSequence,
 			Content:    content,
 			CreateTime: time.Now().Format(time.Kitchen),
 		}
@@ -55,10 +57,18 @@ func MessageChat(c *gin.Context) {
 	if user, exist := UsersLoginInfo[token]; exist {
 		userIdB, _ := strconv.Atoi(toUserId)
 		chatKey := genChatKey(user.Id, int64(userIdB))
-
+		//更新
+		var err error
+		var Chat []model.Message
+		Chat, err = service.GetAllChat(user.Id, int64(userIdB))
+		if err != nil {
+			fmt.Sprintf("加载新聊天记录失败")
+		} else {
+			tempChat[chatKey] = Chat
+		}
 		c.JSON(http.StatusOK, ChatResponse{Response: model.Response{StatusCode: 0}, MessageList: tempChat[chatKey]})
 	} else {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "This user doesn't exist"})
 	}
 }
 
